@@ -41,7 +41,8 @@ Bu proje, görsel akıcılık ve etkileşim odaklı olduğu için modern React e
 ├── src/
 │   ├── app/
 │   │   ├── page.tsx          # Ana giriş (Loading + Scene Switcher)
-│   │   └── layout.tsx
+│   │   ├── layout.tsx
+│   │   └── globals.css       # Global styles
 │   ├── components/
 │   │   ├── Room/
 │   │   │   ├── RoomScene.tsx     # Ana oda container'ı
@@ -80,13 +81,15 @@ Bu proje, görsel akıcılık ve etkileşim odaklı olduğu için modern React e
 
 ## 5. Roadmap & Status
 
-- [ ] **Phase 1: Setup & Atmosphere**
-  - [ ] Next.js projesini kur (Tailwind + Framer Motion).
-  - [ ] Varlık (Asset) yönetimi: Görselleri ve sesleri `public` klasörüne hazırla.
-  - [ ] Giriş Ekranı: "She was born in January..." yazısı ve "Giriş" butonu.
+- [x] **Phase 1: Setup & Atmosphere**
+  - [x] Next.js projesini kur (Tailwind + Framer Motion).
+  - [x] Varlık (Asset) yönetimi: `public` klasörü yapısı tanımlandı.
+  - [x] Giriş Ekranı: "She was born in January..." yazısı ve "Giriş" butonu.
+  - [x] Game Context oluşturuldu.
+  - [x] SnowFall bileşeni eklendi.
 
 - [ ] **Phase 2: The Treehouse (Interactive Room)**
-  - [ ] Arka plan ve pencere (Dışarıda yağan kar efekti - Particles.js).
+  - [ ] **RoomScene Container:** Odanın genel yerleşimi ve arka planı.
   - [ ] **Radyo:** Winamp benzeri mini player. (Şarkılar: Tyler - Like Him, Lady Gaga).
   - [ ] **Çay/Ayran:** Tıkladıkça opacity/doluluk oranı azalan bardak bileşeni.
   - [ ] **Bitki (Easter Egg):** Tıklayınca ekranı sarsan (shake), sesi bozan ve "BİTKİ PORNOSU!" yazan glitch efekti.
