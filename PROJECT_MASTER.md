@@ -1,3 +1,4 @@
+
 # The-January-Shelter
 
 ## 1. Project Overview
@@ -98,11 +99,10 @@ Bu proje, görsel akıcılık ve etkileşim odaklı olduğu için modern React e
   - [x] **Baykuş:** Tıklayınca göz kırpıp "Hoot hoot" diyen ve baloncuk çıkaran animasyon.
   - [x] **Kitaplık:** Rastgele alıntı sistemi (`data/quotes.ts`).
 
-- [ ] **Phase 3: The Sky & The Gift (Finale)**
-  - [ ] **Teleskop:** Tıklayınca `RoomScene` kapanır, `SkyScene` (Uzay) açılır (Fade transition).
-  - [ ] **ConstellationGame:** Ekrana "Flins" (Mor şişe/kılıç şekli) takımyıldızının noktaları sönük halde gelir.
-  - [ ] Kullanıcı noktaları sırayla tıklar/sürükler.
-  - [ ] Şekil tamamlanınca mor bir patlama olur ve **"Mektup Defteri"** açılır.
+- [x] **Phase 3: The Sky & The Gift (Finale)**
+  - [x] **Teleskop:** Tıklayınca `RoomScene` kapanır, `SkyScene` (Uzay) açılır.
+  - [x] **ConstellationGame:** Flins takımyıldızı mantığı ve mor patlama efekti.
+  - [x] **LetterModal:** Mektubun açılacağı son ekran.
 
 - [ ] **Phase 4: Content & Polish**
   - [ ] Mektup içeriğini (Defter görünümünde) ekle.
