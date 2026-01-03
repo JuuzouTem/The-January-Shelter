@@ -49,7 +49,8 @@ Bu proje, görsel akıcılık ve etkileşim odaklı olduğu için modern React e
 │   │   │   ├── InteractiveItem.tsx # Tıklanabilir nesne bileşeni
 │   │   │   ├── RadioPlayer.tsx   # Winamp tarzı player
 │   │   │   ├── PlantGlitch.tsx   # Bitki şakası mantığı
-│   │   │   └── TeaCup.tsx        # İçildikçe azalan bardak
+│   │   │   ├── TeaCup.tsx        # İçildikçe azalan bardak
+│   │   │   └── OwlAnim.tsx       # Baykuş animasyonu
 │   │   ├── Sky/
 │   │   │   ├── SkyScene.tsx      # Teleskop görünümü
 │   │   │   └── ConstellationGame.tsx # Yıldız birleştirme oyunu
@@ -93,13 +94,13 @@ Bu proje, görsel akıcılık ve etkileşim odaklı olduğu için modern React e
   - [x] **InteractiveItem:** Ortak etkileşim bileşeni.
   - [x] **Çay/Ayran:** Tıkladıkça opacity/doluluk oranı azalan bardak bileşeni.
   - [x] **Bitki (Easter Egg):** Glitch efekti ve "BİTKİ PORNOSU!" yazısı.
-  - [ ] **Radyo:** Winamp benzeri mini player.
-  - [ ] **Baykuş:** Tıklayınca göz kırpıp "Hoot hoot" diyen ve baloncuk çıkaran animasyon.
-  - [ ] **Kitaplık:** Tıklayınca `data/quotes.ts`'den rastgele bir string seçip ekranda gösteren modal.
+  - [x] **Radyo:** Winamp benzeri mini player (`howler.js` entegrasyonu).
+  - [x] **Baykuş:** Tıklayınca göz kırpıp "Hoot hoot" diyen ve baloncuk çıkaran animasyon.
+  - [x] **Kitaplık:** Rastgele alıntı sistemi (`data/quotes.ts`).
 
 - [ ] **Phase 3: The Sky & The Gift (Finale)**
   - [ ] **Teleskop:** Tıklayınca `RoomScene` kapanır, `SkyScene` (Uzay) açılır (Fade transition).
-  - [ ] **Constellation Game:** Ekrana "Flins" (Mor şişe/kılıç şekli) takımyıldızının noktaları sönük halde gelir.
+  - [ ] **ConstellationGame:** Ekrana "Flins" (Mor şişe/kılıç şekli) takımyıldızının noktaları sönük halde gelir.
   - [ ] Kullanıcı noktaları sırayla tıklar/sürükler.
   - [ ] Şekil tamamlanınca mor bir patlama olur ve **"Mektup Defteri"** açılır.
 
