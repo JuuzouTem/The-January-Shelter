@@ -88,11 +88,12 @@ Bu proje, görsel akıcılık ve etkileşim odaklı olduğu için modern React e
   - [x] Game Context oluşturuldu.
   - [x] SnowFall bileşeni eklendi.
 
-- [ ] **Phase 2: The Treehouse (Interactive Room)**
-  - [ ] **RoomScene Container:** Odanın genel yerleşimi ve arka planı.
-  - [ ] **Radyo:** Winamp benzeri mini player. (Şarkılar: Tyler - Like Him, Lady Gaga).
-  - [ ] **Çay/Ayran:** Tıkladıkça opacity/doluluk oranı azalan bardak bileşeni.
-  - [ ] **Bitki (Easter Egg):** Tıklayınca ekranı sarsan (shake), sesi bozan ve "BİTKİ PORNOSU!" yazan glitch efekti.
+- [x] **Phase 2: The Treehouse (Interactive Room)**
+  - [x] **RoomScene Container:** Odanın genel yerleşimi ve arka planı (CSS Art).
+  - [x] **InteractiveItem:** Ortak etkileşim bileşeni.
+  - [x] **Çay/Ayran:** Tıkladıkça opacity/doluluk oranı azalan bardak bileşeni.
+  - [x] **Bitki (Easter Egg):** Glitch efekti ve "BİTKİ PORNOSU!" yazısı.
+  - [ ] **Radyo:** Winamp benzeri mini player.
   - [ ] **Baykuş:** Tıklayınca göz kırpıp "Hoot hoot" diyen ve baloncuk çıkaran animasyon.
   - [ ] **Kitaplık:** Tıklayınca `data/quotes.ts`'den rastgele bir string seçip ekranda gösteren modal.
 
