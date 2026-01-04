@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react'; // useEffect eklendi
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Telescope } from 'lucide-react';
-import { Howl } from 'howler'; // Howler eklendi
+import { Howl } from 'howler';
 import { useGame } from '@/context/GameContext';
 import { quotes } from '@/data/quotes';
 
@@ -22,23 +22,17 @@ const RoomScene = () => {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [currentQuote, setCurrentQuote] = useState("");
 
-  // --- RÜZGAR SESİ ENTEGRASYONU ---
+  // Rüzgar Sesi
   useEffect(() => {
-    // Oda açılınca rüzgar başlasın
     const windSound = new Howl({
       src: ['/sounds/wind.mp3'],
-      loop: true,       // Sürekli çalsın
-      volume: 0.15,     // Çok kısık, rahatsız etmeyen seviye
+      loop: true,
+      volume: 0.15,
       autoplay: true,
       html5: true
     });
-
-    // Oda kapanırsa (Gökyüzüne gidilirse) ses dursun
-    return () => {
-      windSound.unload();
-    };
+    return () => { windSound.unload(); };
   }, []);
-  // ---------------------------------
 
   const handleOpenBook = () => {
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
@@ -48,70 +42,75 @@ const RoomScene = () => {
 
   return (
     <motion.div 
-      className="relative w-full h-full max-w-6xl mx-auto flex items-end justify-center perspective-1000"
+      className="relative w-full h-full overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* --- ODA ALTYAPISI --- */}
-      <div className="absolute inset-0 bg-[#1a1f2e] shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] rounded-t-[50px] border-t-8 border-[#2d3748] overflow-hidden">
-        
-        {/* Fotoğraf Galerisi */}
-        <PolaroidGallery />
+      {/* 
+          1. ARKA PLAN (GARANTİ YÖNTEM: IMG TAGI) 
+          Standart img tagı kullanıyoruz, z-index en altta.
+      */}
+      <img 
+        src="/images/room-bg.png" 
+        alt="Room Background" 
+        className="absolute inset-0 w-full h-full object-cover -z-50 opacity-90"
+      />
 
-        {/* Pencere */}
-        <div className="absolute top-20 md:top-10 left-1/2 -translate-x-1/2 w-64 h-64 md:w-96 md:h-80 bg-[#0a0f1e]/30 border-8 border-[#4a5568] rounded-t-full shadow-2xl backdrop-blur-[2px] z-0">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-4 bg-[#4a5568]"></div>
-            <div className="absolute h-full w-4 bg-[#4a5568]"></div>
-          </div>
-        </div>
+      {/* 
+          2. EŞYALAR 
+          Ağaç ev görseline göre konumlandırıldı.
+      */}
 
-        {/* Zemin */}
-        <div className="absolute bottom-0 w-full h-1/3 bg-[#2d2a24] border-t-4 border-[#3f3b32] shadow-2xl z-10">
-           <div className="w-full h-full opacity-10 bg-[radial-gradient(circle,transparent_20%,#000_20%,#000_80%,transparent_80%,transparent),radial-gradient(circle,transparent_20%,#000_20%,#000_80%,transparent_80%,transparent)] bg-[length:20px_20px]" />
-        </div>
+      {/* Fotoğraf Galerisi (Üst Orta - Tavandan sarkıyor) */}
+      <div className="absolute top-[5%] left-1/2 -translate-x-1/2 z-10 w-full flex justify-center">
+         <PolaroidGallery />
       </div>
 
-      {/* --- EŞYALAR --- */}
-      <div className="relative z-20 w-full h-1/3 flex items-end justify-around pb-10 px-4 md:px-20">
-        
-        {/* Sol Taraf */}
-        <div className="flex flex-col items-center gap-6 mb-4">
-           <PlantGlitch />
-           <RadioPlayer />
-        </div>
+      {/* Bitki (Sol Üst Köşe - Tavandan sarkıyor) */}
+      <div className="absolute top-[-2%] left-[2%] z-20 w-[12vw] max-w-[150px]">
+         <PlantGlitch />
+      </div>
 
-        {/* Orta */}
-        <div className="flex items-end gap-8 mb-4">
-          <TeaCup />
-          
-          {/* Kitap */}
-          <InteractiveItem label="Rastgele Bir Not" onClick={handleOpenBook} className="w-20 h-20">
-             <img 
-               src="/images/items/book.png" 
-               alt="Kitap" 
-               className="w-full h-full object-contain -rotate-12 drop-shadow-lg"
-             />
-          </InteractiveItem>
-        </div>
+      {/* Radyo (Sol Alt Köşe - Yerde/Rafta) */}
+      <div className="absolute bottom-[5%] left-[5%] z-20 w-[15vw] max-w-[180px]">
+         <RadioPlayer />
+      </div>
 
-        {/* Sağ Taraf */}
-        <div className="flex flex-col items-center gap-6 mb-8">
-          <OwlAnim />
+      {/* Çay (Orta Alt - Halı/Masa üstü) */}
+      <div className="absolute bottom-[10%] left-[35%] z-20 w-[8vw] max-w-[100px]">
+         <TeaCup />
+      </div>
 
-          <InteractiveItem 
-            label="Gökyüzüne Bak" 
+      {/* Kitap (Sağ Alt - Yerde/Rafta) */}
+      <div className="absolute bottom-[5%] right-[25%] z-20 w-[12vw] max-w-[160px]">
+        <InteractiveItem label="Notlar" onClick={handleOpenBook} className="w-full h-full">
+            <img 
+              src="/images/items/book.png" 
+              alt="Kitap" 
+              className="w-full h-auto object-contain -rotate-6 hover:rotate-0 transition-transform duration-500 drop-shadow-2xl"
+            />
+        </InteractiveItem>
+      </div>
+
+      {/* Baykuş (Sağ Üst - Pencere kenarı) */}
+      <div className="absolute top-[25%] right-[10%] z-20 w-[10vw] max-w-[120px]">
+         <OwlAnim />
+      </div>
+
+      {/* Teleskop (Sağ Alt - Pencere önü) */}
+      <div className="absolute bottom-[15%] right-[5%] z-20 w-[10vw] max-w-[120px]">
+        <InteractiveItem 
+            label="Gökyüzü" 
             onClick={() => changeScene('sky')}
-            className="w-24 h-24"
+            className="w-full h-full"
           >
-            <Telescope size={80} className="text-yellow-500 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] -rotate-45" />
+            <Telescope className="w-full h-full text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.6)] -rotate-45 hover:text-yellow-200 transition-colors" />
           </InteractiveItem>
-        </div>
       </div>
 
-      {/* Vignette (Karanlık Kenarlar) */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,#0a0f1e_100%)] z-30" />
+      {/* 3. ATMOSFER KATMANLARI */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_40%,#000000_100%)] z-30 opacity-50" />
 
       {/* Modallar */}
       <BookQuotes 
