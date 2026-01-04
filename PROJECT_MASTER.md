@@ -83,6 +83,7 @@ Bu proje, görsel akıcılık ve etkileşim odaklı olduğu için modern React e
 
 ## 5. Roadmap & Status
 
+<<<<<<< HEAD
 - [ ] **Phase 1: Setup & Atmosphere**
   - [ ] Next.js projesini kur (Tailwind + Framer Motion).
   - [ ] Varlık (Asset) yönetimi: `public` klasörü yapısı tanımlandı.
@@ -103,6 +104,28 @@ Bu proje, görsel akıcılık ve etkileşim odaklı olduğu için modern React e
   - [ ] **Teleskop:** Tıklayınca `RoomScene` kapanır, `SkyScene` (Uzay) açılır.
   - [ ] **ConstellationGame:** Flins takımyıldızı mantığı ve mor patlama efekti.
   - [ ] **LetterModal:** Mektubun açılacağı son ekran.
+=======
+- [x] **Phase 1: Setup & Atmosphere**
+  - [x] Next.js projesini kur (Tailwind + Framer Motion).
+  - [x] Varlık (Asset) yönetimi: `public` klasörü yapısı tanımlandı.
+  - [x] Giriş Ekranı: "She was born in January..." yazısı ve "Giriş" butonu.
+  - [x] Game Context oluşturuldu.
+  - [x] SnowFall bileşeni eklendi.
+
+- [x] **Phase 2: The Treehouse (Interactive Room)**
+  - [x] **RoomScene Container:** Odanın genel yerleşimi ve arka planı (CSS Art).
+  - [x] **InteractiveItem:** Ortak etkileşim bileşeni.
+  - [x] **Çay/Ayran:** Tıkladıkça opacity/doluluk oranı azalan bardak bileşeni.
+  - [x] **Bitki (Easter Egg):** Glitch efekti ve "BİTKİ PORNOSU!" yazısı.
+  - [x] **Radyo:** Winamp benzeri mini player (`howler.js` entegrasyonu).
+  - [x] **Baykuş:** Tıklayınca göz kırpıp "Hoot hoot" diyen ve baloncuk çıkaran animasyon.
+  - [x] **Kitaplık:** Rastgele alıntı sistemi (`data/quotes.ts`).
+
+- [x] **Phase 3: The Sky & The Gift (Finale)**
+  - [x] **Teleskop:** Tıklayınca `RoomScene` kapanır, `SkyScene` (Uzay) açılır.
+  - [x] **ConstellationGame:** Flins takımyıldızı mantığı ve mor patlama efekti.
+  - [x] **LetterModal:** Mektubun açılacağı son ekran.
+>>>>>>> fa0166d495e53e7fbc06fa789e15888586518899
 
 - [ ] **Phase 4: Content & Polish**
   - [ ] Mektup içeriğini (Defter görünümünde) ekle.
