@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Howl } from 'howler';
 import InteractiveItem from './InteractiveItem';
 
 const OwlAnim = () => {
   const [isHooting, setIsHooting] = useState(false);
 
+  // Ses dosyasının yolu
   const hootSound = new Howl({
     src: ['/sounds/hoot.mp3'],
     volume: 0.4,
@@ -17,42 +18,44 @@ const OwlAnim = () => {
     if (isHooting) return;
     setIsHooting(true);
     hootSound.play();
+    
+    // 2 saniye sonra yazıyı kaldır
     setTimeout(() => setIsHooting(false), 2000);
   };
 
   return (
-    <InteractiveItem onClick={handleHoot} label="Bekçi Baykuş" className="w-20 h-20 flex items-center justify-center">
+    <InteractiveItem onClick={handleHoot} label="Bekçi Baykuş" className="w-full h-full">
       <div className="relative w-full h-full flex items-center justify-center">
         
-        {isHooting && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0 }}
-            animate={{ opacity: 1, y: -40, scale: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute top-0 right-0 bg-white text-black text-xs px-2 py-1 rounded-tl-lg rounded-tr-lg rounded-br-lg font-bold z-50 whitespace-nowrap"
-          >
-            Hoot!
-          </motion.div>
-        )}
+        {/* Konuşma Balonu Animasyonu */}
+        <AnimatePresence>
+          {isHooting && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.5, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+              exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+              
+              // ÖNEMLİ KISIM:
+              // -top-[70px]: Baykuşun kafasından 70 piksel yukarı iter.
+              // left-1/2 ve -translate-x-1/2 (x: "-50%" içinde): Tam ortalar.
+              className="absolute -top-[30px] left-1/2 bg-white text-black text-sm px-4 py-2 rounded-2xl font-bold z-[60] whitespace-nowrap shadow-xl border-2 border-[#4a3b32]"
+            >
+              Hoot!
+              
+              {/* Balonun altındaki minik ok (üçgen) */}
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-[#4a3b32] rotate-45"></div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* CSS İle Çizilmiş Baykuş (Animasyon için gerekli) */}
-        <motion.div 
-          className="w-12 h-16 bg-[#4a5568] rounded-full relative border-2 border-[#2d3748] shadow-lg"
-          animate={isHooting ? { rotate: [0, -10, 10, 0] } : {}}
-        >
-          {/* Gözler */}
-          <div className="absolute top-3 left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center overflow-hidden">
-             <motion.div className="w-2 h-2 bg-black rounded-full" animate={isHooting ? { height: [8, 1, 8] } : {}} />
-          </div>
-          <div className="absolute top-3 right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center overflow-hidden">
-             <motion.div className="w-2 h-2 bg-black rounded-full" animate={isHooting ? { height: [8, 1, 8] } : {}} />
-          </div>
-          {/* Gaga */}
-          <div className="absolute top-7 left-1/2 -translate-x-1/2 w-2 h-2 bg-orange-400 rotate-45" />
-          {/* Kanatlar */}
-          <div className="absolute top-8 -left-1 w-3 h-8 bg-[#2d3748] rounded-l-full" />
-          <div className="absolute top-8 -right-1 w-3 h-8 bg-[#2d3748] rounded-r-full" />
-        </motion.div>
+        {/* Baykuş Görseli */}
+        <motion.img 
+          src="/images/items/owl.png" 
+          alt="Baykuş"
+          className="w-full h-full object-contain drop-shadow-xl select-none pointer-events-none"
+          animate={isHooting ? { rotate: [0, -10, 10, 0], scale: [1, 1.1, 1] } : { y: [0, -5, 0] }}
+          transition={isHooting ? { duration: 0.5 } : { duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+        />
       </div>
     </InteractiveItem>
   );

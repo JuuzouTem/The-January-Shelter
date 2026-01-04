@@ -1,89 +1,88 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react'; // useState eklendi
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import SnowFall from '@/components/Effects/SnowFall';
 import RoomScene from '@/components/Room/RoomScene';
 import SkyScene from '@/components/Sky/SkyScene';
+import LetterModal from '@/components/UI/LetterModal'; // Import eklendi
 
 export default function Home() {
-  const { currentScene, enterShelter } = useGame();
+  const { currentScene, enterShelter, changeScene } = useGame();
+
+  // Mektup modalını açma kapama mantığı
+  // GameContext'te scene 'letter' olduğunda modalı render edeceğiz
+  const isLetterOpen = currentScene === 'letter';
+
+  const handleCloseLetter = () => {
+    // Mektup kapanınca odaya veya gökyüzüne dön
+    changeScene('room');
+  };
 
   return (
-    <main className="relative w-full h-screen overflow-hidden flex items-center justify-center bg-[#0a0f1e]">
+    <main className="relative w-full h-screen overflow-hidden bg-[#0a0f1e] font-sans text-slate-200 selection:bg-purple-500/30">
       
-      {/* Global Arka Plan Efektleri */}
-      {/* SkyScene'de kendi yıldızları olacağı için SnowFall'u sadece intro ve room için gösterebiliriz veya opaklığını azaltabiliriz */}
-      <div className={currentScene === 'sky' ? 'opacity-20 transition-opacity duration-1000' : 'opacity-100'}>
+      {/* Global Efektler */}
+      <div className={`absolute inset-0 pointer-events-none z-0 ${currentScene === 'sky' ? 'opacity-20' : 'opacity-100'} transition-opacity duration-1000`}>
          <SnowFall />
       </div>
       
       <AnimatePresence mode="wait">
         
-        {/* INTRO SAHNESİ */}
+        {/* --- INTRO SAHNESİ --- */}
         {currentScene === 'intro' && (
           <motion.div
             key="intro"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
-            transition={{ duration: 1.5 }}
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm"
+            exit={{ opacity: 0, scale: 1.05, filter: "blur(20px)" }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            onClick={enterShelter}
+            className="fixed inset-0 z-50 w-screen h-screen flex flex-col items-center justify-center cursor-pointer bg-transparent"
           >
-            <motion.h1 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="text-4xl md:text-6xl font-light tracking-widest text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
-            >
-              JANUARY SHELTER
-            </motion.h1>
-            
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.8 }}
-              transition={{ delay: 1.5, duration: 1 }}
-              className="mt-4 text-sm md:text-lg text-slate-300 italic"
-            >
-              "She was born in the heart of winter..."
-            </motion.p>
-
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(124, 58, 237, 0.5)" }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ delay: 2.5, duration: 0.5 }}
-              onClick={enterShelter}
-              className="mt-12 px-8 py-3 bg-transparent border border-white/20 text-white rounded-full 
-                         hover:bg-white/10 hover:border-accent transition-all duration-300 backdrop-blur-md"
-            >
-              Sığınağa Gir
-            </motion.button>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/60 pointer-events-none" />
+            <div className="relative z-10 flex flex-col items-center gap-6 p-4 text-center select-none">
+              <motion.h1 
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 1, type: "spring", stiffness: 50 }}
+                className="text-5xl md:text-7xl font-extralight tracking-[0.2em] text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.3)]"
+              >
+                JANUARY SHELTER
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.7 }}
+                transition={{ delay: 1.8, duration: 1 }}
+                className="text-sm md:text-lg font-serif italic tracking-wider text-slate-300"
+              >
+                "She was born in the heart of winter..."
+              </motion.p>
+            </div>
           </motion.div>
         )}
 
-        {/* ODA SAHNESİ */}
+        {/* --- ODA SAHNESİ --- */}
         {currentScene === 'room' && (
           <motion.div
             key="room"
             className="absolute inset-0 z-10 w-full h-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, y: 100 }} // Aşağı doğru kaybolsun, yukarı bakıyoruz hissi
+            exit={{ opacity: 0, y: 50 }}
             transition={{ duration: 1.5 }}
           >
             <RoomScene />
           </motion.div>
         )}
 
-        {/* GÖKYÜZÜ SAHNESİ */}
+        {/* --- GÖKYÜZÜ SAHNESİ --- */}
         {currentScene === 'sky' && (
           <motion.div
             key="sky"
             className="absolute inset-0 z-30 w-full h-full"
-            initial={{ opacity: 0 }} // Siyahlıktan gelsin
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 2 }}
@@ -93,6 +92,14 @@ export default function Home() {
         )}
 
       </AnimatePresence>
+
+      {/* --- LETTER MODAL (Global Overlay) --- */}
+      {/* Sahne 'letter' olduğunda render olur */}
+      <LetterModal 
+        isOpen={isLetterOpen} 
+        onClose={handleCloseLetter} 
+      />
+
     </main>
   );
 }
