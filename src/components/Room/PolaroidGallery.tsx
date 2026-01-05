@@ -2,17 +2,18 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom'; // Portal için gerekli
+import { createPortal } from 'react-dom'; 
 import { X } from 'lucide-react';
 
 const photos = [
-  { id: 1, src: '/images/polaroids/1.jpg', caption: 'Anılar...', rotate: 4 },
+  // rotate değerleri sabit duruş açılarıdır
+  { id: 1, src: '/images/polaroids/1.jpg', caption: 'Anılar...', rotate: -2 },
   { id: 2, src: '/images/polaroids/2.jpg', caption: 'Kış', rotate: -2 },
 ];
 
 const PolaroidGallery = () => {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
-  const [mounted, setMounted] = useState(false); // Portal için client kontrolü
+  const [mounted, setMounted] = useState(false);
   const activePhoto = photos.find(p => p.id === selectedPhoto);
 
   useEffect(() => {
@@ -21,31 +22,29 @@ const PolaroidGallery = () => {
 
   return (
     <>
-      {/* Container: Askıdaki Fotoğraflar */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40vw] max-w-[300px] flex justify-center gap-4 z-10">
-        {photos.map((photo, index) => (
+      {/* Container: Panodaki Fotoğraflar */}
+      {/* width fit-content yaptık ki içindekiler kadar yer kaplasın */}
+      <div className="relative w-fit flex gap-[5%] p-4"> 
+        {photos.map((photo) => (
           <motion.div
             key={photo.id}
-            className="relative cursor-pointer origin-top"
-            style={{ rotate: photo.rotate }}
-            whileHover={{ scale: 1.1, rotate: 0, zIndex: 20 }}
-            animate={{ rotate: [photo.rotate - 1, photo.rotate + 1, photo.rotate - 1] }}
-            transition={{ rotate: { duration: 3 + index, repeat: Infinity, ease: "easeInOut" } }}
+            className="relative cursor-pointer"
+            // Sallanma animasyonu SİLİNDİ. Sadece duruş açısı var.
+            initial={{ rotate: photo.rotate }}
+            whileHover={{ scale: 1.1, zIndex: 50, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 300 }}
             onClick={() => setSelectedPhoto(photo.id)}
           >
-            {/* İp */}
-            <div className="absolute -top-[100px] left-1/2 -translate-x-1/2 w-0.5 h-[100px] bg-slate-400/50" />
             
-            {/* Mandal */}
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-2 h-4 bg-yellow-700 shadow-sm rounded-sm z-20" />
-            
-            {/* Polaroid Çerçeve (Sabit Boyutlandırma) */}
-            <div className="bg-white p-2 pb-6 shadow-lg w-24 md:w-28 flex flex-col items-center transform transition-transform">
-              {/* DÜZELTME: Aspect Ratio ve Object Fit eklendi */}
-              <div className="w-full aspect-[4/5] bg-gray-200 overflow-hidden">
+            {/* Polaroid Çerçeve - BOYUTLAR EŞİTLENDİ */}
+            {/* w-24 (96px) ve h-32 (128px) olarak sabitledik. Resim ne olursa olsun bu boyutta olacak. */}
+            <div className="bg-white p-2 pb-8 shadow-md w-24 h-32 flex flex-col items-center">
+              
+              <div className="w-full h-full bg-gray-100 overflow-hidden">
                 <img 
                     src={photo.src} 
                     alt={photo.caption} 
+                    // object-cover: Resmi kutuya sığdırır ve fazlalıkları keser (böylece bozulmaz)
                     className="w-full h-full object-cover" 
                 />
               </div>
@@ -54,7 +53,7 @@ const PolaroidGallery = () => {
         ))}
       </div>
 
-      {/* Lightbox Modalı (PORTAL İLE BODY'YE TAŞINDI) */}
+      {/* Lightbox Modalı (Burası aynı kaldı) */}
       {mounted && activePhoto && createPortal(
         <AnimatePresence>
           {selectedPhoto !== null && (
@@ -69,7 +68,6 @@ const PolaroidGallery = () => {
                 className="relative max-w-4xl w-full max-h-screen flex flex-col items-center justify-center"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Kapat Butonu */}
                 <button 
                   onClick={() => setSelectedPhoto(null)}
                   className="absolute -top-12 right-0 md:right-[-40px] bg-white/20 hover:bg-red-600 text-white rounded-full p-2 transition-all"
@@ -77,9 +75,7 @@ const PolaroidGallery = () => {
                   <X size={24} />
                 </button>
 
-                {/* Polaroid Büyük Görünüm */}
                 <div className="bg-white p-4 pb-16 rounded shadow-2xl transform rotate-1 max-h-[85vh] flex flex-col">
-                   {/* DÜZELTME: Resim taşmasını önlemek için max-h ve object-contain */}
                    <div className="relative overflow-hidden flex-1 min-h-0">
                       <img 
                         src={activePhoto.src} 
