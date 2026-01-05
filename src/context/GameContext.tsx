@@ -66,7 +66,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         // Müzik yoksa oluştur ve çal
         if (!musicRef.current) {
             musicRef.current = new Howl({
-                src: ['/sounds/bg-music.mp3'],
+                src: ['/sounds/bga-music.mp3'],
                 html5: true,
                 loop: true,
                 volume: 0.4,
