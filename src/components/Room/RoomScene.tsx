@@ -102,7 +102,7 @@ const RoomScene = () => {
       </div>
 
       {/* Baykuş (Sağ Üst - Pencere kenarı) */}
-      <div className="absolute top-[28%] right-[10%] z-20 w-[10vw] max-w-[120px]">
+      <div className="absolute top-[26%] right-[10%] z-20 w-[10vw] max-w-[110px]">
          <OwlAnim />
       </div>
 
