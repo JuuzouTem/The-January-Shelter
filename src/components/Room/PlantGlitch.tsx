@@ -56,7 +56,7 @@ const PlantGlitch = () => {
               transition={{ duration: 0.1, repeat: Infinity }}
               className="text-5xl md:text-9xl font-black text-red-600 font-mono tracking-tighter text-center"
             >
-              BİTKİ PORNOSU!
+              Soon!
             </motion.h1>
           </motion.div>
         )}
