@@ -4,24 +4,24 @@ import confetti from 'canvas-confetti';
 import { useGame } from '@/context/GameContext';
 import { Sparkles } from 'lucide-react';
 
-// İsteğine uygun yeni koordinatlar
+// Yıldız koordinatları - Daha dengeli ve ekranın ortasına odaklı
 const STARS = [
-  { id: 1, x: 50, y: 10 }, // 1. Tepe Noktası
-  { id: 2, x: 50, y: 30 }, // 2. Boyun
-  { id: 3, x: 30, y: 40 }, // 3. Sol Omuz
-  { id: 4, x: 70, y: 40 }, // 4. Sağ Omuz
-  { id: 5, x: 45, y: 70 }, // 5. Alt Sol
-  { id: 6, x: 55, y: 70 }, // 6. Alt Sağ
+  { id: 1, x: 50, y: 20 }, // En Tepe
+  { id: 2, x: 50, y: 40 }, // Gövde Üst (Merkez)
+  { id: 3, x: 25, y: 50 }, // Sol Kanat
+  { id: 4, x: 75, y: 50 }, // Sağ Kanat
+  { id: 5, x: 35, y: 75 }, // Alt Sol
+  { id: 6, x: 65, y: 75 }, // Alt Sağ
 ];
 
-// Bağlantı Mantığı (Şeklin bütünlüğü için)
+// Bağlantı Mantığı - Tam bir geometrik mühür oluşturur
 const CONNECTIONS = [
-  [1, 2], // Tepe -> Boyun
-  [2, 3], // Boyun -> Sol
-  [2, 4], // Boyun -> Sağ
+  [1, 2], // Tepe -> Gövde
+  [2, 3], // Gövde -> Sol
+  [2, 4], // Gövde -> Sağ
   [3, 5], // Sol -> Alt Sol
   [4, 6], // Sağ -> Alt Sağ
-  [5, 6], // Alt uç birleşimi (Opsiyonel, şekli kapatmak için)
+  [5, 6], // Alt Sol -> Alt Sağ (Taban birleşimi)
 ];
 
 const ConstellationGame = () => {
@@ -30,18 +30,17 @@ const ConstellationGame = () => {
   const [activeStars, setActiveStars] = useState<number[]>([]);
   const [isComplete, setIsComplete] = useState(false);
 
-  // Ses ve aktivasyon mantığı
   const handleStarClick = (id: number) => {
     if (isComplete) return;
 
     if (!activeStars.includes(id)) {
-      playSound('pop'); // Veya daha "magical" bir ses
+      playSound('pop'); 
       const newActive = [...activeStars, id];
       setActiveStars(newActive);
       
       if (newActive.length === STARS.length) {
         setIsComplete(true);
-        setTimeout(handleWinEffects, 800);
+        handleWinEffects();
       }
     }
   };
@@ -52,41 +51,49 @@ const ConstellationGame = () => {
     const end = Date.now() + duration;
 
     const frame = () => {
-      confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#d8b4fe', '#ffffff'] });
-      confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#a855f7', '#d8b4fe'] });
+      confetti({ 
+        particleCount: 3, 
+        angle: 60, 
+        spread: 55, 
+        origin: { x: 0, y: 0.8 }, 
+        colors: ['#a855f7', '#ffffff', '#6366f1'] 
+      });
+      confetti({ 
+        particleCount: 3, 
+        angle: 120, 
+        spread: 55, 
+        origin: { x: 1, y: 0.8 }, 
+        colors: ['#a855f7', '#ffffff', '#6366f1'] 
+      });
       if (Date.now() < end) requestAnimationFrame(frame);
     };
     frame();
   };
 
   return (
-    <div className="relative w-full h-full max-w-[600px] max-h-[800px] select-none mx-auto">
+    <div className="relative w-full h-[85vh] max-w-[500px] select-none mx-auto flex items-center justify-center">
       
-      {/* SVG KATMANI (Sadece Bağlantılar İçin) */}
+      {/* SVG KATMANI (Bağlantılar) */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
         <defs>
-          {/* Çizgi için Neon Glow Efekti */}
           <filter id="line-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
             <feMerge>
               <feMergeNode in="coloredBlur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
           
-          {/* Çizgi Gradients */}
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#c084fc" />
-            <stop offset="50%" stopColor="#e879f9" />
-            <stop offset="100%" stopColor="#c084fc" />
+            <stop offset="0%" stopColor="#d8b4fe" />
+            <stop offset="50%" stopColor="#ffffff" />
+            <stop offset="100%" stopColor="#d8b4fe" />
           </linearGradient>
         </defs>
 
         {CONNECTIONS.map(([startId, endId], i) => {
           const s = STARS.find(star => star.id === startId);
           const e = STARS.find(star => star.id === endId);
-          
-          // Sadece iki uçtaki yıldız da aktifse çizgi var olur
           const isConnected = activeStars.includes(startId) && activeStars.includes(endId);
 
           if (!s || !e || !isConnected) return null;
@@ -97,19 +104,18 @@ const ConstellationGame = () => {
               x1={`${s.x}%`} y1={`${s.y}%`}
               x2={`${e.x}%`} y2={`${e.y}%`}
               stroke="url(#lineGradient)"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               filter="url(#line-glow)"
-              // Çizim Animasyonu: 0'dan 1'e doğru çizilir
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 1, ease: "easeInOut" }}
             />
           );
         })}
       </svg>
 
-      {/* YILDIZLAR KATMANI */}
+      {/* YILDIZLAR */}
       {STARS.map((star) => {
         const isActive = activeStars.includes(star.id);
 
@@ -117,74 +123,68 @@ const ConstellationGame = () => {
           <div
             key={star.id}
             onClick={() => handleStarClick(star.id)}
-            className="absolute z-20 cursor-pointer w-16 h-16 flex items-center justify-center group"
+            className="absolute z-20 cursor-pointer w-12 h-12 flex items-center justify-center group"
             style={{ 
                 left: `${star.x}%`, 
                 top: `${star.y}%`,
                 transform: 'translate(-50%, -50%)' 
             }}
           >
-            {/* Tıklama Alanı (Görünmez ama geniş) */}
-            <div className="absolute inset-0 rounded-full" />
+            {/* Etkileşim Alanı Parlaması (Tıklanmamışken rehberlik eder) */}
+            {!isActive && !isComplete && (
+              <motion.div 
+                animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute w-full h-full bg-white/10 rounded-full blur-md"
+              />
+            )}
 
-            {/* YILDIZ GÖRSELİ */}
             <div className="relative flex items-center justify-center">
-                
-                {/* 1. Dış Glow (Sadece Aktifken büyür) */}
+                {/* Aktif Glow */}
                 <motion.div 
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={isActive ? { scale: 1.5, opacity: 0.4 } : { scale: 0, opacity: 0 }}
-                    className="absolute w-12 h-12 bg-purple-500 rounded-full blur-xl"
+                    initial={{ scale: 0 }}
+                    animate={isActive ? { scale: 1.5, opacity: 0.6 } : { scale: 0 }}
+                    className="absolute w-10 h-10 bg-purple-400 rounded-full blur-xl"
                 />
 
-                {/* 2. Dönen Kare (Elmas Efekti) */}
-                <motion.div 
-                    className={`absolute w-3 h-3 border border-purple-300/50 rotate-45 transition-all duration-500
-                        ${isActive ? 'bg-purple-500/80 shadow-[0_0_15px_rgba(168,85,247,0.8)] scale-125' : 'bg-transparent scale-100'}
+                {/* Yıldız Simgesi */}
+                <motion.div
+                    className={`relative transition-all duration-500
+                        ${isActive ? 'text-white scale-110 drop-shadow-[0_0_10px_rgba(255,255,255,1)]' : 'text-white/30 scale-90 group-hover:text-white/60'}
                     `}
-                    animate={{ rotate: 45 }} // Sabit duruş, isteğe göre rotate artırılabilir
-                />
-
-                {/* 3. Ana Yıldız Şekli (SVG - 4 Köşeli Sparkle) */}
-                <motion.svg
-                    viewBox="0 0 24 24"
-                    className={`w-8 h-8 transition-all duration-500 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]
-                        ${isActive ? 'text-white scale-110' : 'text-white/40 scale-75 hover:scale-90 hover:text-white/70'}
-                    `}
-                    initial={false}
-                    animate={isActive ? { rotate: [0, 90, 0], scale: [1, 1.2, 1] } : {}}
-                    transition={{ duration: 0.6 }}
+                    animate={isActive ? { rotate: 360 } : { rotate: 0 }}
+                    transition={{ duration: 0.8 }}
                 >
-                    <path fill="currentColor" d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-                </motion.svg>
-                
-                {/* 4. Merkez Çekirdek (Parlak Nokta) */}
-                <div className={`absolute w-1 h-1 bg-white rounded-full shadow-[0_0_10px_#fff] transition-opacity ${isActive ? 'opacity-100' : 'opacity-0'}`} />
-
+                  <Sparkles className={isActive ? "w-8 h-8" : "w-6 h-6"} />
+                </motion.div>
             </div>
           </div>
         );
       })}
 
-      {/* FINAL BUTONU */}
+      {/* FINAL BUTONU - Daha belirgin ve merkezi */}
       <AnimatePresence>
         {isComplete && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="absolute bottom-[-5%] left-0 right-0 flex justify-center z-50"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute bottom-10 left-0 right-0 flex flex-col items-center gap-4 z-50"
           >
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => changeScene('letter')}
-              className="group relative flex items-center gap-3 px-10 py-4 text-white uppercase bg-transparent overflow-hidden rounded-full transition-all"
+              className="px-12 py-4 bg-white text-indigo-950 font-bold rounded-full shadow-[0_0_30px_rgba(168,85,247,0.5)] hover:shadow-[0_0_50px_rgba(168,85,247,0.8)] transition-all tracking-[0.2em] uppercase text-sm flex items-center gap-3"
             >
-              {/* Buton Arkaplan Efekti */}
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-violet-600 to-indigo-600 opacity-80 group-hover:opacity-100 transition-opacity blur-sm rounded-full" />
-              <div className="absolute inset-0 w-full h-full border border-white/20 rounded-full" />
-              
-              <span className="relative z-10 font-bold tracking-[0.2em] text-lg drop-shadow-md">Mührü Çöz</span>
-              <Sparkles className="relative z-10 w-5 h-5 animate-pulse text-purple-200" />
-            </button>
+              Mührü Çöz
+              <motion.div
+                animate={{ x: [0, 5, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                <Sparkles className="w-4 h-4" />
+              </motion.div>
+            </motion.button>
+            <p className="text-white/40 text-[10px] tracking-[0.3em] uppercase">Göklerin kapısı aralanıyor</p>
           </motion.div>
         )}
       </AnimatePresence>
