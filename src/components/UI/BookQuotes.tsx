@@ -7,6 +7,7 @@ import { X } from 'lucide-react';
 interface EmptyBookProps {
   isOpen: boolean;
   onClose: () => void;
+  quote: string;
 }
 
 const TOTAL_PAGES = 10;
@@ -43,7 +44,7 @@ const MEMORY_TEXTS = [
   "Bugün kendim için bir şey yaptım ve sadece durdum. Hiçbir şey yapmadan, sadece nefes alarak anın tadını çıkardım."
 ];
 
-const EmptyBook = ({ isOpen, onClose }: EmptyBookProps) => {
+const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
   const [flippedIndex, setFlippedIndex] = useState(0);
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
 

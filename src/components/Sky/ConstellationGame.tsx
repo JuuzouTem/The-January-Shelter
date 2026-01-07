@@ -21,8 +21,8 @@ const ConstellationGame = () => {
   // --- SESLER ---
   const sounds = useMemo(() => {
     return {
-      starClick: new Howl({ src: ['/sounds/glitch.mp3'], volume: 0.2, rate: 3.0 }), 
-      success: new Howl({ src: ['/sounds/bg-music.mp3'], volume: 0.5 }), 
+      starClick: new Howl({ src: ['/sounds/glitch1.mp3'], volume: 0.2, rate: 3.0 }), 
+      success: new Howl({ src: ['/sounds/bg-music1.mp3'], volume: 0.5 }), 
     };
   }, []);
 
