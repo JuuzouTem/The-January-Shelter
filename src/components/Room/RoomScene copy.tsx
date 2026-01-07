@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Howl } from 'howler';
-import Confetti from 'react-confetti'; // Konfeti eklendi
-import useWindowSize from 'react-use/lib/useWindowSize'; // Boyutlandırma için
 import { useGame } from '@/context/GameContext';
 import { quotes } from '@/data/quotes';
 
@@ -16,17 +14,11 @@ import OwlAnim from './OwlAnim';
 import InteractiveItem from './InteractiveItem';
 import BookQuotes from '../UI/BookQuotes';
 import PolaroidGallery from './PolaroidGallery';
-import BirthdayModal from '../UI/BirthdayModal'; // Yeni modal import edildi
 
 const RoomScene = () => {
-  const { changeScene, isCakeUnlocked } = useGame();
-  const { width, height } = useWindowSize(); // Konfeti için ekran boyutu
+  const { changeScene, isCakeUnlocked } = useGame(); // isCakeUnlocked eklendi
   
-  // Modallar için State
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
-  const [isBirthdayModalOpen, setIsBirthdayModalOpen] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  
   const [currentQuote, setCurrentQuote] = useState("");
 
   // Rüzgar Sesi
@@ -47,27 +39,9 @@ const RoomScene = () => {
     setIsQuoteOpen(true);
   };
 
-  // --- PASTA TIKLAMA OLAYI ---
   const handleCakeClick = () => {
-     // 1. Sesi Çal
-     const yaySound = new Howl({
-        src: ['/sounds/yey.mp3'],
-        volume: 0.6
-     });
-     yaySound.play();
-
-     // 2. Konfetiyi Patlat
-     setShowConfetti(true);
-
-     // 3. Modalı Aç (Biraz gecikmeli açılabilir ki konfeti görünsün)
-     setTimeout(() => {
-        setIsBirthdayModalOpen(true);
-     }, 500);
-     
-     // 4. Konfetiyi 5 saniye sonra durdur (Performans için)
-     setTimeout(() => {
-        setShowConfetti(false);
-     }, 6000);
+     // Pasta tıklandığında ne olacağı buraya gelecek (şu an boş)
+     console.log("Pasta tıklandı!");
   };
 
   return (
@@ -77,14 +51,6 @@ const RoomScene = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* KONFETİ KATMANI (En üstte görünmesi için z-index yüksek olmalı) */}
-      {showConfetti && (
-        <div className="fixed inset-0 pointer-events-none z-[99]">
-            <Confetti width={width} height={height} numberOfPieces={300} recycle={true} />
-        </div>
-      )}
-
-      {/* ARKA PLAN */}
       <img 
         src="/images/room-bg.png" 
         alt="Room Background" 
@@ -117,13 +83,13 @@ const RoomScene = () => {
          <TeaCup />
       </div>
 
-      {/* --- PASTA --- */}
+      {/* --- PASTA (YENİ EKLENEN KISIM) --- */}
       {isCakeUnlocked && (
         <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.1 }}
-            className="absolute bottom-[32%] left-[42%] z-25 w-[8vw] max-w-[160px] cursor-pointer"
+            transition={{ duration: 1, type: "spring" }}
+            className="absolute bottom-[32%] left-[42%] z-25 w-[8vw] max-w-[160px]"
         >
             <InteractiveItem 
                 label="Doğum Günü" 
@@ -133,7 +99,7 @@ const RoomScene = () => {
                 <img 
                     src="/images/items/cake.png" 
                     alt="Birthday Cake" 
-                    className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]"
+                    className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] hover:scale-105 transition-transform duration-300"
                 />
             </InteractiveItem>
         </motion.div>
@@ -173,25 +139,12 @@ const RoomScene = () => {
       {/* Atmosfer */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_40%,#000000_100%)] z-30 opacity-50" />
 
-      {/* --- MODALLAR --- */}
-      
-      {/* Kitap Sözleri Modalı */}
+      {/* Modallar */}
       <BookQuotes 
         isOpen={isQuoteOpen} 
         onClose={() => setIsQuoteOpen(false)} 
         quote={currentQuote} 
       />
-
-      {/* YENİ: Doğum Günü Mektup Modalı */}
-      <AnimatePresence>
-        {isBirthdayModalOpen && (
-            <BirthdayModal 
-                isOpen={isBirthdayModalOpen} 
-                onClose={() => setIsBirthdayModalOpen(false)} 
-            />
-        )}
-      </AnimatePresence>
-
     </motion.div>
   );
 };

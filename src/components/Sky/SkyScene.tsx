@@ -18,17 +18,29 @@ const SkyScene = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 1.5 }}
-      // Z-Index 50 ve bg-colors eklendi
-      className="fixed inset-0 z-50 w-full h-full overflow-hidden bg-[#0a0616]"
+      // GÜNCELLEME: Ana arka plan rengi çok koyu mor yapıldı
+      className="fixed inset-0 z-50 w-full h-full overflow-hidden bg-[#1a0b2e]"
     >
-      {/* Deep Space Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-[#1e1b4b] to-[#312e81] opacity-80" />
+      {/* 
+         GÜNCELLEME: Mor Nebula Efekti (Radial Gradient)
+         Ortada daha açık ve canlı bir mor (#7e22ce), 
+         dışlara doğru koyulaşan derin mor (#3b0764) ve en dışta lacivert/siyah (#0f0518).
+      */}
+      <div 
+        className="absolute inset-0 opacity-90"
+        style={{
+            background: 'radial-gradient(circle at center, #6b21a8 0%, #3b0764 40%, #1e0536 80%, #0a0214 100%)'
+        }}
+      />
       
-      {/* Yıldız Efekti (CSS) */}
-      <div className="absolute inset-0 opacity-40" style={{ 
-        backgroundImage: 'radial-gradient(white 1px, transparent 1px)', 
+      {/* Yıldız Efekti (Doku) */}
+      <div className="absolute inset-0 opacity-50" style={{ 
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px)', 
         backgroundSize: '40px 40px' 
       }}></div>
+
+      {/* Ekstra Atmosferik Bulutlar (Opsiyonel - Daha organik durması için) */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 mix-blend-overlay"></div>
 
       {/* Geri Dön Butonu */}
       <button 
@@ -41,9 +53,8 @@ const SkyScene = () => {
         </span>
       </button>
 
-      {/* Oyun Alanı Ortala */}
+      {/* Oyun Alanı */}
       <div className="relative z-10 flex items-center justify-center w-full h-full p-4">
-        {/* Constellation Game */}
         <ConstellationGame />
       </div>
     </motion.div>
