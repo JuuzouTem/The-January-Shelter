@@ -24,7 +24,7 @@ export default function Home() {
     <main className="relative w-full h-screen overflow-hidden bg-[#0a0f1e] font-sans text-slate-200 selection:bg-purple-500/30">
       
       {/* Global Efektler */}
-      <div className={`absolute inset-0 pointer-events-none z-0 ${currentScene === 'sky' ? 'opacity-20' : 'opacity-100'} transition-opacity duration-1000`}>
+      <div className={`absolute inset-0 pointer-events-none z-0 ${currentScene === 'intro' ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}>
          <SnowFall />
       </div>
       
@@ -89,7 +89,7 @@ export default function Home() {
           >
             <SkyScene />
           </motion.div>
-        )}
+        )}  
 
       </AnimatePresence>
 
