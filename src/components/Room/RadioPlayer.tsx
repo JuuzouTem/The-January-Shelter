@@ -7,10 +7,14 @@ import { Play, Pause, SkipForward, SkipBack, Disc } from 'lucide-react';
 import { standardMusicList, easterEggSongs, Song } from '@/data/musicList';
 import InteractiveItem from './InteractiveItem';
 
+interface RadioPlayerProps {
+  onPlayStateChange?: (isPlaying: boolean) => void;
+}
+
 // OLASILIK AYARI (%5)
 const EASTER_EGG_CHANCE = 0.05;
 
-const RadioPlayer = () => {
+const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackState, setTrackState] = useState(0); 
   const [currentSong, setCurrentSong] = useState<Song>(standardMusicList[0]);
@@ -120,10 +124,10 @@ const RadioPlayer = () => {
   };
 
   useEffect(() => {
-    return () => {
-      if (soundRef.current) soundRef.current.unload();
-    };
-  }, []);
+    if (onPlayStateChange) {
+      onPlayStateChange(isPlaying);
+    }
+  }, [isPlaying, onPlayStateChange]);
 
   return (
     <div className="relative">

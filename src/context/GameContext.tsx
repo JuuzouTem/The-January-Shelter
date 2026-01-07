@@ -16,9 +16,8 @@ interface GameContextType {
   toggleAudio: (play?: boolean) => void;
   enterShelter: () => void;
   playSound: (type: SoundType) => void;
-  // --- YENİ EKLENENLER ---
-  isCakeUnlocked: boolean; // Pastanın kilit durumu
-  unlockCake: () => void;  // Kilidi açma fonksiyonu
+  isCakeUnlocked: boolean;
+  unlockCake: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -26,25 +25,19 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [currentScene, setCurrentScene] = useState<SceneType>('intro');
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  
-  // --- YENİ STATE ---
   const [isCakeUnlocked, setIsCakeUnlocked] = useState(false);
   
-  // Müzik Referansı (Arka plan müziği için)
   const musicRef = useRef<Howl | null>(null);
-  
-  // SFX Referansları (Efektler için)
   const sounds = useRef<Record<string, Howl>>({});
 
-  // Sesleri Yükle
   useEffect(() => {
     sounds.current = {
       'wind': new Howl({ src: ['/sounds/wind.mp3'], loop: true, volume: 0.2 }),
       'glitch': new Howl({ src: ['/sounds/glitch.mp3'], volume: 0.5 }),
       'hoot': new Howl({ src: ['/sounds/hoot.mp3'], volume: 0.6 }),
-      'click': new Howl({ src: ['/sounds/hoot.mp3'], volume: 0.3, rate: 2.0 }), // Placeholder
-      'pop': new Howl({ src: ['/sounds/hoot.mp3'], volume: 0.2, rate: 3.0 }),   // Placeholder
-      'sparkle': new Howl({ src: ['/sounds/wind.mp3'], volume: 1.0, rate: 2.0 }),// Placeholder
+      'click': new Howl({ src: ['/sounds/hoot.mp3'], volume: 0.3, rate: 2.0 }),
+      'pop': new Howl({ src: ['/sounds/hoot.mp3'], volume: 0.2, rate: 3.0 }),
+      'sparkle': new Howl({ src: ['/sounds/wind.mp3'], volume: 1.0, rate: 2.0 }),
     };
 
     return () => {
@@ -64,12 +57,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const toggleAudio = (play?: boolean) => {
-    // Eğer parametre gelmezse tersine çevir
     const newState = play !== undefined ? play : !isAudioPlaying;
     setIsAudioPlaying(newState);
 
     if (newState) {
-        // Müzik yoksa oluştur ve çal
         if (!musicRef.current) {
             musicRef.current = new Howl({
                 src: ['/sounds/bga-music.mp3'],
@@ -82,19 +73,20 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             musicRef.current.play();
         }
     } else {
-        // Durdur
         musicRef.current?.pause();
     }
   };
 
+  // --- DÜZELTİLEN KISIM BURASI ---
   const enterShelter = () => {
-    // Girişte rüzgarı başlat
-    playSound('wind');
+    // playSound('wind');  <-- BU SATIRI SİLDİK / YORUMA ALDIK.
+    // Çünkü RoomScene yüklendiğinde kendi rüzgarını zaten başlatıyor.
+    // Buradan da başlatırsak üst üste iki rüzgar sesi biniyor.
+    
     toggleAudio(true);
     changeScene('room');
   };
 
-  // --- YENİ FONKSİYON ---
   const unlockCake = () => {
     setIsCakeUnlocked(true);
   };
@@ -107,7 +99,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       toggleAudio, 
       enterShelter,
       playSound,
-      // Yeni değerleri buraya ekledik
       isCakeUnlocked, 
       unlockCake
     }}>
@@ -116,7 +107,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook
 export const useGame = () => {
   const context = useContext(GameContext);
   if (!context) {
