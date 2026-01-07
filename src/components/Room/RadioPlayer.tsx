@@ -3,38 +3,81 @@
 import { useState, useEffect, useRef } from 'react';
 import { Howl } from 'howler';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, SkipForward, SkipBack, Disc } from 'lucide-react'; // Disc ikonu eklendi
-import { musicList } from '@/data/musicList';
+import { Play, Pause, SkipForward, SkipBack, Disc } from 'lucide-react';
+import { standardMusicList, easterEggSongs, Song } from '@/data/musicList';
 import InteractiveItem from './InteractiveItem';
+
+// OLASILIK AYARI (%5)
+const EASTER_EGG_CHANCE = 0.05;
 
 const RadioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  // isOpen state'ini kaldırdık, çalıyorsa player otomatik gözüksün
+  const [trackState, setTrackState] = useState(0); 
+  const [currentSong, setCurrentSong] = useState<Song>(standardMusicList[0]);
   const soundRef = useRef<Howl | null>(null);
 
-  const currentTrack = musicList[currentTrackIndex];
+  // --- TEMA MANTIĞI ---
+  const getThemeStyles = () => {
+    // 1. DURUM: TV GIRL (Mavi & Pembe)
+    if (trackState === -1) {
+      return {
+        bg: "rgba(20, 10, 40, 0.9)",
+        border: "rgba(236, 72, 153, 0.8)", // Pembe Çerçeve
+        shadow: "0 0 30px rgba(59, 130, 246, 0.4)",
+        discGradient: "linear-gradient(135deg, #3b82f6, #ec4899)",
+        labelText: "WHO'S REALLY THERE?",  
+        labelColor: "#ec4899",             // ÜST YAZI: PEMBE
+        songTitleColor: "#60a5fa",         // ŞARKI ADI: MAVİ (Pastel Mavi)
+        iconColor: "#ffffff"
+      };
+    }
+    // 2. DURUM: MASQUERADE (Siyah & Beyaz)
+    if (trackState === -2) {
+      return {
+        bg: "rgba(0, 0, 0, 0.95)",
+        border: "rgba(255, 255, 255, 0.9)",
+        shadow: "0 0 0px rgba(0,0,0,0)",
+        discGradient: "linear-gradient(135deg, #000000, #ffffff)",
+        labelText: "THE MASQUERADE",
+        labelColor: "#d1d5db",             // ÜST YAZI: Gri/Beyaz
+        songTitleColor: "#ffffff",         // ŞARKI ADI: Beyaz
+        iconColor: "#ffffff"
+      };
+    }
+    // 3. DURUM: STANDART (Default)
+    return {
+      bg: "rgba(0, 0, 0, 0.6)",
+      border: "rgba(255, 255, 255, 0.15)",
+      shadow: "0 4px 20px rgba(0,0,0,0.3)",
+      discGradient: "linear-gradient(135deg, #a855f7, #3b82f6)",
+      labelText: "NOW PLAYING",
+      labelColor: "#9ca3af",             // ÜST YAZI: Gri
+      songTitleColor: "#ffffff",         // ŞARKI ADI: Beyaz
+      iconColor: "#ffffff"
+    };
+  };
 
-  const playTrack = (index: number) => {
+  const theme = getThemeStyles();
+
+  // Müzik çalma fonksiyonları (Aynı)
+  const playSound = (song: Song) => {
     if (soundRef.current) soundRef.current.stop();
-
-    const track = musicList[index];
     const sound = new Howl({
-      src: [track.src],
+      src: [song.src],
       html5: true,
       volume: 0.5,
       onend: () => handleNext()
     });
-
     soundRef.current = sound;
     sound.play();
     setIsPlaying(true);
-    setCurrentTrackIndex(index);
+    setCurrentSong(song);
   };
 
   const togglePlay = () => {
     if (!soundRef.current) {
-      playTrack(currentTrackIndex);
+      playSound(standardMusicList[0]);
+      setTrackState(0);
     } else {
       if (isPlaying) soundRef.current.pause();
       else soundRef.current.play();
@@ -43,11 +86,37 @@ const RadioPlayer = () => {
   };
 
   const handleNext = () => {
-    playTrack((currentTrackIndex + 1) % musicList.length);
+    if (trackState === -1) {
+      setTrackState(-2);
+      playSound(easterEggSongs.main);
+      return;
+    }
+    if (trackState === -2) {
+      const nextIndex = Math.floor(Math.random() * standardMusicList.length);
+      setTrackState(nextIndex);
+      playSound(standardMusicList[nextIndex]);
+      return;
+    }
+    const randomChance = Math.random();
+    if (randomChance < EASTER_EGG_CHANCE) {
+      setTrackState(-1);
+      playSound(easterEggSongs.intro);
+    } else {
+      const nextIndex = (trackState + 1) % standardMusicList.length;
+      setTrackState(nextIndex);
+      playSound(standardMusicList[nextIndex]);
+    }
   };
 
   const handlePrev = () => {
-    playTrack((currentTrackIndex - 1 + musicList.length) % musicList.length);
+    let nextIndex = 0;
+    if (trackState < 0) {
+        nextIndex = standardMusicList.length - 1;
+    } else {
+        nextIndex = (trackState - 1 + standardMusicList.length) % standardMusicList.length;
+    }
+    setTrackState(nextIndex);
+    playSound(standardMusicList[nextIndex]);
   };
 
   useEffect(() => {
@@ -58,47 +127,71 @@ const RadioPlayer = () => {
 
   return (
     <div className="relative">
-      {/* Tıklanabilir Radyo Alanı */}
-      <InteractiveItem label={isPlaying ? "Durdur" : "Müzik Çal"} onClick={togglePlay} className="w-full h-full">
+      <InteractiveItem label={isPlaying ? "Durdur" : "Radyoyu Aç"} onClick={togglePlay} className="w-full h-full">
         <div className="relative w-full h-full">
             <img 
                 src="/images/items/radio.png" 
                 alt="Radyo" 
                 className="w-full h-full object-contain drop-shadow-xl"
             />
-            {/* Müzik Çalıyorsa Radyo Titresin/Parlasın */}
             {isPlaying && (
                 <motion.div
-                    className="absolute inset-0 bg-yellow-400/20 rounded-full blur-xl z-[-1]"
-                    animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                    className="absolute inset-0 rounded-full blur-xl z-[-1]"
+                    animate={{ 
+                      scale: [1, 1.1, 1], 
+                      opacity: [0.5, 0.8, 0.5],
+                      backgroundColor: trackState === -1 ? "rgba(236, 72, 153, 0.5)" : 
+                                       trackState === -2 ? "rgba(255, 255, 255, 0.3)" : 
+                                       "rgba(250, 204, 21, 0.2)"
+                    }}
                     transition={{ duration: 1, repeat: Infinity }}
                 />
             )}
         </div>
       </InteractiveItem>
 
-      {/* MODERN GLASS PLAYER BAR (Ekranın Alt Ortasında Çıkar) */}
       <AnimatePresence>
         {isPlaying && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            animate={{ 
+              y: 0, 
+              opacity: 1,
+              backgroundColor: theme.bg,
+              borderColor: theme.border,
+              boxShadow: theme.shadow
+            }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/40 backdrop-blur-md border border-white/10 px-6 py-3 rounded-full shadow-2xl z-[100]"
+            transition={{ duration: 0.5 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 backdrop-blur-md border px-6 py-3 rounded-full z-[100]"
           >
-            {/* Dönen Disk Animasyonu */}
+            {/* Disk */}
             <motion.div 
               animate={{ rotate: 360 }} 
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              className="bg-gradient-to-tr from-purple-500 to-blue-500 rounded-full p-1"
+              className="rounded-full p-1"
+              style={{ background: theme.discGradient }}
             >
-                <Disc size={24} className="text-white" />
+                <Disc size={24} className="text-white mix-blend-overlay" />
             </motion.div>
 
             {/* Şarkı Bilgisi */}
             <div className="flex flex-col min-w-[120px]">
-              <span className="text-xs text-gray-400 font-medium tracking-wider">NOW PLAYING</span>
-              <span className="text-sm text-white font-bold whitespace-nowrap">{currentTrack.title}</span>
+              {/* Üst Yazı (Pembe / Gri) */}
+              <motion.span 
+                animate={{ color: theme.labelColor }}
+                className="text-xs font-medium tracking-wider"
+              >
+                {theme.labelText}
+              </motion.span>
+              
+              {/* Şarkı Adı (Mavi / Beyaz) */}
+              <motion.span 
+                animate={{ color: theme.songTitleColor }} // Renk animasyonu buraya eklendi
+                className="text-sm font-bold whitespace-nowrap max-w-[150px] overflow-hidden text-ellipsis"
+              >
+                {currentSong.title}
+              </motion.span>
             </div>
 
             {/* Kontroller */}

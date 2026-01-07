@@ -15,7 +15,10 @@ interface GameContextType {
   isAudioPlaying: boolean;
   toggleAudio: (play?: boolean) => void;
   enterShelter: () => void;
-  playSound: (type: SoundType) => void; // Yeni eklenen özellik
+  playSound: (type: SoundType) => void;
+  // --- YENİ EKLENENLER ---
+  isCakeUnlocked: boolean; // Pastanın kilit durumu
+  unlockCake: () => void;  // Kilidi açma fonksiyonu
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -23,6 +26,9 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [currentScene, setCurrentScene] = useState<SceneType>('intro');
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  
+  // --- YENİ STATE ---
+  const [isCakeUnlocked, setIsCakeUnlocked] = useState(false);
   
   // Müzik Referansı (Arka plan müziği için)
   const musicRef = useRef<Howl | null>(null);
@@ -88,6 +94,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     changeScene('room');
   };
 
+  // --- YENİ FONKSİYON ---
+  const unlockCake = () => {
+    setIsCakeUnlocked(true);
+  };
+
   return (
     <GameContext.Provider value={{ 
       currentScene, 
@@ -95,7 +106,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       isAudioPlaying, 
       toggleAudio, 
       enterShelter,
-      playSound 
+      playSound,
+      // Yeni değerleri buraya ekledik
+      isCakeUnlocked, 
+      unlockCake
     }}>
       {children}
     </GameContext.Provider>

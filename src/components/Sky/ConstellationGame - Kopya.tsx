@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import Confetti from 'react-confetti';
@@ -17,6 +17,7 @@ const ConstellationGame = () => {
   const { changeScene } = useGame();
   const [activePoints, setActivePoints] = useState<number[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // --- SESLER ---
   const sounds = useMemo(() => {
@@ -26,9 +27,7 @@ const ConstellationGame = () => {
     };
   }, []);
 
-  // --- KOORDİNATLAR (REVİZE EDİLDİ) ---
-  // Senin şeklini korudum ama Y ekseninde (dikeyde) aralarını açtım.
-  // Böylece daha "uzun" ve estetik duruyor.
+  // --- KOORDİNATLAR ---
   const points: Point[] = [
     { id: 1, x: 48, y: 16.5 }, // Tepe (Biraz aşağı indi)
     { id: 2, x: 48, y: 32 }, // Boyun (Aşağı indi)
@@ -58,6 +57,7 @@ const ConstellationGame = () => {
     if (newActive.length === points.length) {
       setTimeout(() => {
         setIsCompleted(true);
+        setShowConfetti(true); // Konfetiyi tetikle
         sounds.success.play();
       }, 500);
     }
@@ -68,21 +68,16 @@ const ConstellationGame = () => {
   };
 
   return (
-    // MERKEZLEYİCİ WRAPPER (Bu div, oyunu ekranın tam ortasına sabitler)
+    // MERKEZLEYİCİ WRAPPER
     <div className="flex items-center justify-center w-full h-full">
       
-      {/* 
-         OYUN ALANI (CONTAINER) 
-         İşte sır burada: max-w ve max-h vererek alanı kısıtlıyoruz.
-         Böylece % değerleri tüm ekrana yayılmıyor, bu kutunun içine yayılıyor.
-      */}
+      {/* OYUN ALANI */}
       <div className="relative w-full h-full max-w-[500px] max-h-[750px]">
       
-        {/* --- CSS STYLES --- */}
         <style jsx>{`
         @keyframes twinkle {
           0% { opacity: 0.7; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.3); } /* 0% yerine 50% yaptım, animasyon düzelir */
+          50% { opacity: 1; transform: scale(1.3); }
           100% { opacity: 0.7; transform: scale(1); }
         }
         
@@ -92,12 +87,11 @@ const ConstellationGame = () => {
           border-radius: 50%;
           box-shadow: 0 0 12px 2px rgba(255, 255, 255, 0.8);
           animation: twinkle 3s infinite ease-in-out;
-          width: 10px; /* Biraz daha belirgin olması için büyüttüm */
+          width: 10px;
           height: 10px;
           transition: all 0.3s ease;
         }
 
-        /* Tıklandığında morlaşan hali */
         .star.active {
           background-color: #d8b4fe; 
           box-shadow: 0 0 15px 4px rgba(192, 132, 252, 0.9);
@@ -106,6 +100,22 @@ const ConstellationGame = () => {
           border-radius: 50% !important;
         }
         `}</style>
+
+         <div className="absolute inset-0 w-full h-full z-0 pointer-events-none flex items-center justify-center opacity-70">
+              <div className="w-full h-full -translate-x-[59px] -translate-y-[-15px]">
+             <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                viewBox="0 -65 660 950" 
+             >
+                <image 
+                    width="800" 
+                    height="800" 
+                    xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfMAAAH0CAYAAAApCsTzAAAQAElEQVR4AeydBWAUR/vwZ9bPLy64S3BSXAsUl+Juxa24S3B3d5cGK1AcmrZIcQ8OAQIhnpyvz3d5/==" 
+                />
+             </svg>
+        </div>
+    </div>
 
         {/* 2. ÇİZGİLER (SVG Layer) */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
@@ -123,11 +133,11 @@ const ConstellationGame = () => {
                 y1={`${p1.y}%`}
                 x2={`${p2.x}%`}
                 y2={`${p2.y}%`}
-                stroke={isActive ? "#c084fc" : "rgba(255, 255, 255, 0.1)"} // Pasifken çok silik
+                stroke={isActive ? "#c084fc" : "rgba(255, 255, 255, 0.1)"}
                 strokeWidth={isActive ? 2 : 1}
                 initial={false}
                 animate={{ 
-                    pathLength: isActive ? 1 : 0, // Sadece aktifken çizilsin (isteğe bağlı)
+                    pathLength: isActive ? 1 : 0, 
                     opacity: isActive ? 1 : 0.2,
                 }}
                 transition={{ duration: 1.5 }}
@@ -145,7 +155,6 @@ const ConstellationGame = () => {
           const isActive = activePoints.includes(point.id);
 
           return (
-            // Button sadece tıklama alanıdır (hitbox), görünmezdir
             <button
               key={point.id}
               onClick={() => handlePointClick(point.id)}
@@ -162,22 +171,29 @@ const ConstellationGame = () => {
       </div>
       </div>
 
-      {/* 4. FINAL MODAL (Ekranın Ortasında Bağımsız) */}
+      {/* 
+        4. KONFETİ VE FINAL MODAL 
+        Konfeti bileşenini CSS style ile zorla 'fixed' yaptık ki 
+        parent div'in transform/flex özelliklerinden etkilenmesin.
+      */}
       <AnimatePresence>
         {isCompleted && (
           <>
-            <div className="fixed inset-0 pointer-events-none z-40">
+            {/* Konfetiyi render etmek için window boyutlarını bekleyelim */}
+            {showConfetti && width > 0 && height > 0 && (
                  <Confetti 
                     width={width} 
                     height={height} 
-                    numberOfPieces={150} 
-                    gravity={0.15} 
-                    colors={['#fbbf24', '#d8b4fe', '#ffffff']} 
+                    numberOfPieces={200} 
+                    gravity={0.2} // Yerçekimi biraz artırıldı, daha doğal düşüş için
+                    initialVelocityY={10} // Hafif bir patlama etkisi
+                    colors={['#fbbf24', '#d8b4fe', '#ffffff', '#c084fc']} 
                     recycle={false} 
+                    style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 100 }}
                 />
-            </div>
+            )}
             
-            <div className="absolute inset-x-0 bottom-[10%] z-50 flex justify-center p-4">
+            <div className="absolute inset-x-0 bottom-[10%] z-[101] flex justify-center p-4">
                 <motion.div
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
