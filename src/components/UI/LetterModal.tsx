@@ -2,8 +2,6 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-// Mektup içeriğini ayrı bir dosyadan çekelim
-import { letterContent } from '@/data/letterContent';
 
 interface Props {
   isOpen: boolean;

@@ -20,7 +20,7 @@ const OwlAnim = () => {
     hootSound.play();
     
     // 2 saniye sonra yazıyı kaldır
-    setTimeout(() => setIsHooting(false), 2000);
+    setTimeout(() => setIsHooting(false), 3000);
   };
 
   return (
