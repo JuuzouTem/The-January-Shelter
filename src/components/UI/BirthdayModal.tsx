@@ -89,13 +89,13 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
             
             <div className="text-[#c51c1c] text-base md:text-[17px] space-y-4">
                <p>
-                  &emsp; Soon.
+                  &emsp; Sitedeki her şeye baktığından emin oldun mu? Lazım olacaklar. 
                </p>
                <p>
-                  &emsp; Soon.
+                  &emsp; Eğer mektubunda ne yazdığını öğrenmek istiyorsan linke tıklamalısın.
                </p>
                <p>
-                  &emsp; Soon.
+                  &emsp; https://juuzoutem.github.io/birthday/
                </p>
             </div>
 

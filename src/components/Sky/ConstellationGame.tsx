@@ -25,7 +25,12 @@ const ConstellationGame = () => {
   const sounds = useMemo(() => {
     return {
       starClick: new Howl({ src: ['/sounds/glitch1.mp3'], volume: 0.2, rate: 3.0 }), 
-      success: new Howl({ src: ['/sounds/bg-music1.mp3'], volume: 0.5 }), 
+      success: new Howl({ src: ['/sounds/cons.mp3'], volume: 0.5 }), 
+      intro: new Howl({ 
+        src: ['/sounds/cons_sound.mp3'], 
+        volume: 0.5,
+        html5: true // Tarayıcı uyumluluğu için bunu tutmak iyidir
+      }), 
     };
   }, []);
 
@@ -42,6 +47,10 @@ const ConstellationGame = () => {
     }));
     setBackgroundStars(stars);
   }, []);
+
+    useEffect(() => {
+    sounds.intro.play();
+  }, [sounds]);
 
   const points: Point[] = [
     { id: 1, x: 48, y: 16.5 }, 
