@@ -13,11 +13,10 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif; /* Daha sonra custom font eklenebilir */
-  overflow: hidden; /* Tam ekran deneyimi için scrollu kapatıyoruz */
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
 }
 
-/* Custom Scrollbar (Mektup vs için gerekirse) */
 ::-webkit-scrollbar {
   width: 8px;
 }

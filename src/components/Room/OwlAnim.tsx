@@ -8,7 +8,6 @@ import InteractiveItem from './InteractiveItem';
 const OwlAnim = () => {
   const [isHooting, setIsHooting] = useState(false);
 
-  // Ses dosyasının yolu
   const hootSound = new Howl({
     src: ['/sounds/hoot.mp3'],
     volume: 0.4,
@@ -19,7 +18,6 @@ const OwlAnim = () => {
     setIsHooting(true);
     hootSound.play();
     
-    // 2 saniye sonra yazıyı kaldır
     setTimeout(() => setIsHooting(false), 3000);
   };
 
@@ -27,7 +25,6 @@ const OwlAnim = () => {
     <InteractiveItem onClick={handleHoot} label="Bekçi Baykuş" className="w-full h-full">
       <div className="relative w-full h-full flex items-center justify-center">
         
-        {/* Konuşma Balonu Animasyonu */}
         <AnimatePresence>
           {isHooting && (
             <motion.div
@@ -35,20 +32,15 @@ const OwlAnim = () => {
               animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
               exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
               
-              // ÖNEMLİ KISIM:
-              // -top-[70px]: Baykuşun kafasından 70 piksel yukarı iter.
-              // left-1/2 ve -translate-x-1/2 (x: "-50%" içinde): Tam ortalar.
               className="absolute -top-[30px] left-1/2 bg-white text-black text-sm px-4 py-2 rounded-2xl font-bold z-[60] whitespace-nowrap shadow-xl border-2 border-[#4a3b32]"
             >
               Hoot!
               
-              {/* Balonun altındaki minik ok (üçgen) */}
               <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-[#4a3b32] rotate-45"></div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Baykuş Görseli */}
         <motion.img 
           src="/images/items/owl.png" 
           alt="Baykuş"

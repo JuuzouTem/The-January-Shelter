@@ -3,10 +3,8 @@
 import React, { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
 import { Howl } from 'howler';
 
-// Ses Tipleri
 type SoundType = 'bg-music' | 'wind' | 'glitch' | 'hoot' | 'click' | 'sparkle' | 'pop';
 
-// Sahne Tipleri
 type SceneType = 'intro' | 'room' | 'sky' | 'letter';
 
 interface GameContextType {
@@ -77,11 +75,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // --- DÜZELTİLEN KISIM BURASI ---
+
   const enterShelter = () => {
-    // playSound('wind');  <-- BU SATIRI SİLDİK / YORUMA ALDIK.
-    // Çünkü RoomScene yüklendiğinde kendi rüzgarını zaten başlatıyor.
-    // Buradan da başlatırsak üst üste iki rüzgar sesi biniyor.
+
     
     toggleAudio(true);
     changeScene('room');

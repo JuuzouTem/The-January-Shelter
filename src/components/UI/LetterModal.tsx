@@ -25,7 +25,7 @@ const LetterModal = ({ isOpen, onClose }: Props) => {
             transition={{ type: "spring", damping: 20 }}
             className="relative w-full max-w-2xl bg-[#fdfbf7] text-[#1a1a1a] rounded-sm shadow-2xl overflow-hidden"
           >
-            {/* Kağıt Dokusu ve Çizgiler */}
+
             <div 
               className="absolute inset-0 pointer-events-none opacity-50"
               style={{
@@ -34,7 +34,7 @@ const LetterModal = ({ isOpen, onClose }: Props) => {
               }}
             />
 
-            {/* İçerik */}
+
             <div className="relative z-10 p-8 md:p-12 max-h-[80vh] overflow-y-auto scrollbar-thin">
               <button 
                 onClick={onClose} 
@@ -50,7 +50,7 @@ const LetterModal = ({ isOpen, onClose }: Props) => {
               </div>
             </div>
 
-            {/* Dekoratif Süsler */}
+
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-accent/20 via-accent/50 to-accent/20" />
           </motion.div>
         </motion.div>

@@ -11,7 +11,6 @@ interface RadioPlayerProps {
   onPlayStateChange?: (isPlaying: boolean) => void;
 }
 
-// OLASILIK AYARI (%5)
 const EASTER_EGG_CHANCE = 0.05;
 
 const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
@@ -20,22 +19,19 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
   const [currentSong, setCurrentSong] = useState<Song>(standardMusicList[0]);
   const soundRef = useRef<Howl | null>(null);
 
-  // --- TEMA MANTIĞI ---
   const getThemeStyles = () => {
-    // 1. DURUM: TV GIRL (Mavi & Pembe)
     if (trackState === -1) {
       return {
         bg: "rgba(20, 10, 40, 0.9)",
-        border: "rgba(236, 72, 153, 0.8)", // Pembe Çerçeve
+        border: "rgba(236, 72, 153, 0.8)",
         shadow: "0 0 30px rgba(59, 130, 246, 0.4)",
         discGradient: "linear-gradient(135deg, #3b82f6, #ec4899)",
-        labelText: "WHO'S REALLY THERE?",  
-        labelColor: "#ec4899",             // ÜST YAZI: PEMBE
-        songTitleColor: "#60a5fa",         // ŞARKI ADI: MAVİ (Pastel Mavi)
+        labelText: "WHO'S REALLY THERE?",
+        labelColor: "#ec4899",
+        songTitleColor: "#60a5fa",
         iconColor: "#ffffff"
       };
     }
-    // 2. DURUM: MASQUERADE (Siyah & Beyaz)
     if (trackState === -2) {
       return {
         bg: "rgba(0, 0, 0, 0.95)",
@@ -43,27 +39,25 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
         shadow: "0 0 0px rgba(0,0,0,0)",
         discGradient: "linear-gradient(135deg, #000000, #ffffff)",
         labelText: "THE MASQUERADE",
-        labelColor: "#d1d5db",             // ÜST YAZI: Gri/Beyaz
-        songTitleColor: "#ffffff",         // ŞARKI ADI: Beyaz
+        labelColor: "#d1d5db",
+        songTitleColor: "#ffffff",
         iconColor: "#ffffff"
       };
     }
-    // 3. DURUM: STANDART (Default)
     return {
       bg: "rgba(0, 0, 0, 0.6)",
       border: "rgba(255, 255, 255, 0.15)",
       shadow: "0 4px 20px rgba(0,0,0,0.3)",
       discGradient: "linear-gradient(135deg, #a855f7, #3b82f6)",
       labelText: "NOW PLAYING",
-      labelColor: "#9ca3af",             // ÜST YAZI: Gri
-      songTitleColor: "#ffffff",         // ŞARKI ADI: Beyaz
+      labelColor: "#9ca3af",
+      songTitleColor: "#ffffff",
       iconColor: "#ffffff"
     };
   };
 
   const theme = getThemeStyles();
 
-  // Müzik çalma fonksiyonları (Aynı)
   const playSound = (song: Song) => {
     if (soundRef.current) soundRef.current.stop();
     const sound = new Howl({
@@ -169,7 +163,6 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
             transition={{ duration: 0.5 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 backdrop-blur-md border px-6 py-3 rounded-full z-[100]"
           >
-            {/* Disk */}
             <motion.div 
               animate={{ rotate: 360 }} 
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
@@ -179,9 +172,7 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
                 <Disc size={24} className="text-white mix-blend-overlay" />
             </motion.div>
 
-            {/* Şarkı Bilgisi */}
             <div className="flex flex-col min-w-[120px]">
-              {/* Üst Yazı (Pembe / Gri) */}
               <motion.span 
                 animate={{ color: theme.labelColor }}
                 className="text-xs font-medium tracking-wider"
@@ -189,16 +180,14 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
                 {theme.labelText}
               </motion.span>
               
-              {/* Şarkı Adı (Mavi / Beyaz) */}
               <motion.span 
-                animate={{ color: theme.songTitleColor }} // Renk animasyonu buraya eklendi
+                animate={{ color: theme.songTitleColor }}
                 className="text-sm font-bold whitespace-nowrap max-w-[150px] overflow-hidden text-ellipsis"
               >
                 {currentSong.title}
               </motion.span>
             </div>
 
-            {/* Kontroller */}
             <div className="flex items-center gap-2 border-l border-white/10 pl-4">
               <button onClick={handlePrev} className="p-2 hover:bg-white/10 rounded-full text-white transition-colors">
                 <SkipBack size={18} />

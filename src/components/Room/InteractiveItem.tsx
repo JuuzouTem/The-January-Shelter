@@ -7,7 +7,7 @@ interface InteractiveItemProps {
   children: ReactNode;
   onClick?: () => void;
   className?: string;
-  label?: string; // Hoverda çıkacak küçük ipucu yazısı (isteğe bağlı)
+  label?: string;
 }
 
 const InteractiveItem = ({ children, onClick, className, label }: InteractiveItemProps) => {
@@ -18,20 +18,17 @@ const InteractiveItem = ({ children, onClick, className, label }: InteractiveIte
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
     >
-      {/* Parlama Efekti (Genshin Style) */}
-      <div className="absolute inset-0 bg-accent/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       
-      {/* Nesnenin Kendisi */}
       <div className="relative z-10">
         {children}
       </div>
 
-      {/* Label Tooltip */}
       {label && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileHover={{ opacity: 1, y: 0 }}
-          className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap pointer-events-none"
+          className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs text-white bg-black/60 backdrop-blur-md px-2 py-1 rounded whitespace-nowrap pointer-events-none z-50"
         >
           {label}
         </motion.div>

@@ -6,9 +6,8 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 const photos = [
-  // rotate değerleri sabit duruş açılarıdır
-  { id: 1, src: '/images/polaroids/1.jpg', caption: 'Anılar...', rotate: -2 },
-  { id: 2, src: '/images/polaroids/2.jpg', caption: 'Kış', rotate: -2 },
+  { id: 1, src: '/images/polaroids/1.jpg', caption: 'İlk...', rotate: -2 },
+  { id: 2, src: '/images/polaroids/2.jpg', caption: 'lol', rotate: -2 },
 ];
 
 const PolaroidGallery = () => {
@@ -22,29 +21,23 @@ const PolaroidGallery = () => {
 
   return (
     <>
-      {/* Container: Panodaki Fotoğraflar */}
-      {/* width fit-content yaptık ki içindekiler kadar yer kaplasın */}
       <div className="relative w-fit flex gap-[5%] p-4"> 
         {photos.map((photo) => (
           <motion.div
             key={photo.id}
             className="relative cursor-pointer"
-            // Sallanma animasyonu SİLİNDİ. Sadece duruş açısı var.
             initial={{ rotate: photo.rotate }}
             whileHover={{ scale: 1.1, zIndex: 50, rotate: 0 }}
             transition={{ type: "spring", stiffness: 300 }}
             onClick={() => setSelectedPhoto(photo.id)}
           >
             
-            {/* Polaroid Çerçeve - BOYUTLAR EŞİTLENDİ */}
-            {/* w-24 (96px) ve h-32 (128px) olarak sabitledik. Resim ne olursa olsun bu boyutta olacak. */}
             <div className="bg-white p-2 pb-8 shadow-md w-24 h-32 flex flex-col items-center">
               
               <div className="w-full h-full bg-gray-100 overflow-hidden">
                 <img 
                     src={photo.src} 
                     alt={photo.caption} 
-                    // object-cover: Resmi kutuya sığdırır ve fazlalıkları keser (böylece bozulmaz)
                     className="w-full h-full object-cover" 
                 />
               </div>
@@ -53,7 +46,6 @@ const PolaroidGallery = () => {
         ))}
       </div>
 
-      {/* Lightbox Modalı (Burası aynı kaldı) */}
       {mounted && activePhoto && createPortal(
         <AnimatePresence>
           {selectedPhoto !== null && (

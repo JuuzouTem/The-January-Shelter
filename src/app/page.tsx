@@ -1,36 +1,32 @@
 'use client';
 
-import React, { useState } from 'react'; // useState eklendi
+import React, { useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import SnowFall from '@/components/Effects/SnowFall';
 import RoomScene from '@/components/Room/RoomScene';
 import SkyScene from '@/components/Sky/SkyScene';
-import LetterModal from '@/components/UI/LetterModal'; // Import eklendi
+import LetterModal from '@/components/UI/LetterModal';
 
 export default function Home() {
   const { currentScene, enterShelter, changeScene } = useGame();
 
-  // Mektup modalını açma kapama mantığı
-  // GameContext'te scene 'letter' olduğunda modalı render edeceğiz
+
   const isLetterOpen = currentScene === 'letter';
 
   const handleCloseLetter = () => {
-    // Mektup kapanınca odaya veya gökyüzüne dön
     changeScene('room');
   };
 
   return (
     <main className="relative w-full h-screen overflow-hidden bg-[#0a0f1e] font-sans text-slate-200 selection:bg-purple-500/30">
       
-      {/* Global Efektler */}
       <div className={`absolute inset-0 pointer-events-none z-0 ${currentScene === 'intro' ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}>
          <SnowFall />
       </div>
       
       <AnimatePresence mode="wait">
         
-        {/* --- INTRO SAHNESİ --- */}
         {currentScene === 'intro' && (
           <motion.div
             key="intro"
@@ -63,7 +59,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* --- ODA SAHNESİ --- */}
         {currentScene === 'room' && (
           <motion.div
             key="room"
@@ -77,7 +72,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* --- GÖKYÜZÜ SAHNESİ --- */}
         {currentScene === 'sky' && (
           <motion.div
             key="sky"
@@ -93,8 +87,7 @@ export default function Home() {
 
       </AnimatePresence>
 
-      {/* --- LETTER MODAL (Global Overlay) --- */}
-      {/* Sahne 'letter' olduğunda render olur */}
+
       <LetterModal 
         isOpen={isLetterOpen} 
         onClose={handleCloseLetter} 

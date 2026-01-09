@@ -10,84 +10,83 @@ interface EmptyBookProps {
   quote: string;
 }
 
-// --- VERİ YAPILANDIRMASI ---
-// Her sayfa için: Başlık, Mektup İçeriği, Renk ve Kağıt Yönü
+
 const PAGES = [
   {
     id: 1,
     title: "Bölüm I",
     subtitle: "Sessiz Fısıltılar",
-    color: '#D4C4FB', // Lila
-    orientation: 'landscape', // Düz yazı -> YATAY
+    color: '#D4C4FB',
+    orientation: 'landscape',
     content: "Merak ediyorum, başımı kaldırıp geceye baktığımızda gözlerimiz aynı ayı mı buluyor?\nEğer öyleyse, ona fısıldadıklarını görebilmeyi, sessizliğinde sakladıklarını duyabilmeyi dilerdim..."
   },
   {
     id: 2,
     title: "Bölüm II",
-    subtitle: "Vatan ve Sen",
-    color: '#E8D5B5', // Eski Kağıt
-    orientation: 'portrait', // Diyalog -> DİKEY
+    subtitle: "You or Country",
+    color: '#E8D5B5',
+    orientation: 'portrait',
     content: "- If I betray you, I betray myself.\n- If I betray him, I betray my country.\n- My country is very dear to me.\n+ Dearer than I?\n- No...\n- No. Not dearer than you."
   },
   {
     id: 3,
     title: "Bölüm III",
     subtitle: "Rüzgarın Taşıdıkları",
-    color: '#FFABAB', // Pastel Kırmızı/Gül
-    orientation: 'landscape', // Düz yazı -> YATAY
+    color: '#FFABAB',
+    orientation: 'landscape',
     content: "Rüzgar her estiğinde, getirdiği uğultuya kulak veriyor musun? Belki de kelimelere dökülemeyen, sana ulaşamayan o cümleleri taşıyordur kulaklarına..."
   },
   {
     id: 4,
     title: "Bölüm IV",
-    subtitle: "Soğuk Bir Yıldız",
-    color: '#AED9E0', // Buz Mavisi
-    orientation: 'portrait', // Uzun Diyalog -> DİKEY
+    subtitle: "The One Cold Star",
+    color: '#AED9E0',
+    orientation: 'portrait',
     content: "- You must tell her the truth. Before it's...\n- Before it's too late!\n+ Tell her the truth?\n+ Tell her the... truth so that she will watch the stars through tears?\n+ Instead of following the one cold star that is her destiny?\n+ No, no Elvar...\n+ Let her think, I never loved her..."
   },
   {
     id: 5,
     title: "Bölüm V",
-    subtitle: "Siyaha Bakan Ben",
-    color: '#B8E0D2', // Nane Yeşili
-    orientation: 'portrait', // Diyalog -> DİKEY
+    subtitle: "Parlayan Kuyruklu yıldız",
+    color: '#B8E0D2',
+    orientation: 'portrait',
     content: "- Oh Kevin, dediklerini duydun mu?\nGökyüzünde parıldayan bir kayan yıldızmışım onlar için. Sence ben bir parıltı kadar mıyım?\n+ Bırak gökyüzü onların olsun karanlığa gömüldüğünde siyaha bakan ben olacağım, yetmez mi?"
   },
   {
     id: 6,
     title: "Bölüm VI",
-    subtitle: "Sadece Bir Öpücük",
-    color: '#FFF5BA', // Krem/Sarı
-    orientation: 'portrait', // Diyalog -> DİKEY
+    subtitle: "Foolish Reason",
+    color: '#FFF5BA',
+    orientation: 'portrait',
     content: "- Once I told you \"I'd kissed a thousand women\" it was a lie.\n+ I know\n- I've only kissed two or three hundred.\n- Now, how many men have you kissed?\n+ Very few.\n- But you offered me a kiss, why?\n+ Such a foolish reason I'm afraid.\n+ I just... wanted to kiss you."
   },
   {
     id: 7,
     title: "Bölüm VII",
-    subtitle: "Konuşmadan Anlamak",
-    color: '#D7CCC8', // Grimsi Kahve
-    orientation: 'landscape', // Şiirsel/Kısa -> YATAY (Daha hoş durur)
-    content: "Bir benle karşılaştım rüyamda,\nTek bir kelime etmedik.\nSüzüp gitti sadece.\nYine de hissettim dediklerini:\nSöylesene, anlamak için ille de konuşmak mı gerekli?"
+    subtitle: "Anlamak",
+    color: '#D7CCC8',
+    orientation: 'landscape',
+    content: "Bir benle karşılaştım rüyamda,\nTek bir kelime etmedik.\nSüzüp gitti sadece.\nYine de hissettim dediklerini.\nSöylesene, anlamak için ille de konuşmak mı gerekli?"
   },
   {
     id: 8,
     title: "Bölüm VIII",
-    subtitle: "Cesur Bir Şey",
-    color: '#F3E5F5', // Açık Mor/Pembe
-    orientation: 'portrait', // Çok Uzun -> DİKEY
+    subtitle: "Catherine",
+    color: '#F3E5F5',
+    orientation: 'portrait',
     content: "- You live a long time yet Catherine.\n- An eternity without me.\n- You will look into the faces of passers by hoping for something that will for an instant bring me back to you.\n- You will find moonlit night strangely empty because,\n- When you call my name through them there will be no answer.\n- Always your heart will be aching for me and,\n- Your mind will give you the doubtful consolation that you did a brave thing."
   },
   {
     id: 9,
     title: "Bölüm IX",
-    subtitle: "Tehlikeli Oyun",
-    color: '#FFCCBC', // Şeftali/Turuncu
-    orientation: 'portrait', // Çok Uzun -> DİKEY
-    content: "- You despicable fool!\n- You told me it was an accident.\n+ It was an accident, Yes.\n+ But... falling in love with you was the only real accident.\n- You used my trust!\n- Does that mean everything was a lie?\n+ I lied to the world, Catherine, but never to my heart.\n- How can I believe a spy?\n+ Dont believe the SPY.\n+ Believe the man who is ready to die just to stay by your side.\n- We are from different worlds, Rudolph.\n+ Then let the worlds burn. I am dangerously yours, now and forever."
+    subtitle: "An Accident",
+    color: '#FFCCBC',
+    orientation: 'portrait',
+    content: "- You despicable fool!\n- You told me it was an accident.\n+ It was an accident, Yes.\n+ But... falling in love with you was the only real accident.\n- You used my trust!\n- Does that mean everything was a lie?\n+ I lied to the world, Catherine, but never to my heart.\n- How can I believe a spy?\n+ Dont believe the spy.\n+ Believe the man who is ready to die just to stay by your side.\n- We are from different worlds, Rudolph.\n+ Then let the worlds burn. I am dangerously yours, now and forever."
   }
 ];
 
-const TOTAL_PAGES = PAGES.length + 1; // +1 Kapak için
+const TOTAL_PAGES = PAGES.length + 1;
 
 const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
   const [flippedIndex, setFlippedIndex] = useState(0);
@@ -117,7 +116,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
     setActiveItemIndex(null);
   };
 
-  // Aktif sayfa verisini al (Index 0 kapak olduğu için data index'i -1)
+
   const activePageData = activeItemIndex !== null ? PAGES[activeItemIndex - 1] : null;
 
   return (
@@ -130,7 +129,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
         >
           
-          {/* --- AKTİF EŞYA KATMANI (MEKTUP OKUMA MODU) --- */}
+
           <AnimatePresence>
             {activeItemIndex !== null && activePageData && (
               <motion.div 
@@ -141,12 +140,12 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                 onClick={closeActiveItem}
               >
                 <motion.div
-                  drag // SERBEST HAREKET: Drag constraints kaldırıldı
-                  dragMomentum={false} // Bırakınca kayıp gitmesin, olduğu yerde dursun
+                  drag
+                  dragMomentum={false}
                   whileDrag={{ scale: 1.05, cursor: 'grabbing', rotate: 2 }}
                   className="relative shadow-2xl rounded-sm flex flex-col items-center cursor-grab overflow-hidden"
                   style={{ 
-                    // YÖN KONTROLÜ: Sayfanın tipine göre genişlik/yükseklik ayarla
+
                     width: activePageData.orientation === 'portrait' 
                            ? 'min(90vw, 400px)' 
                            : 'min(90vw, 600px)',
@@ -168,7 +167,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   transition={{ type: 'spring', stiffness: 200, damping: 25 }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                    {/* KAPATMA BUTONU */}
+
                     <button
                         onClick={closeActiveItem}
                         onPointerDown={(e) => e.stopPropagation()}
@@ -177,9 +176,9 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                         <X size={18} strokeWidth={2.5} />
                     </button>
 
-                    {/* METİN ALANI */}
+
                     <div className="w-full h-full flex flex-col relative">
-                       {/* Sol kenara yapışmaması için px-10 (padding-x) ekledik */}
+
                        <div className="flex-1 w-full overflow-y-auto custom-scrollbar flex items-center px-10 py-12">
                            <p 
                               className="w-full font-serif leading-relaxed text-left whitespace-pre-wrap select-none"
@@ -197,7 +196,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                        </div>
                        
                        <div className="absolute bottom-4 right-6 pointer-events-none">
-                        <span className="text-[12px]" style={{ fontFamily: '"Dancing Script", cursive', color: '#1a237e', opacity: 0.5 }}>~ 14.01.25</span>
+                        <span className="text-[12px]" style={{ fontFamily: '"Dancing Script", cursive', color: '#1a237e', opacity: 0.5 }}>~7.01.26</span>
                        </div>
                     </div>
                 </motion.div>
@@ -206,7 +205,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
           </AnimatePresence>
 
 
-          {/* --- KİTAP SAHNESİ --- */}
+
           <motion.div
             drag={activeItemIndex === null}
             dragMomentum={false}
@@ -223,7 +222,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                 onClick={onClose} 
                 className="absolute -top-12 right-0 z-50 bg-white/20 hover:bg-red-500/80 text-white rounded-full p-2 transition-all duration-300 backdrop-blur-md"
                 >
-                <X size={24} />
+                <X size={18} />
                 </button>
             )}
 
@@ -242,9 +241,9 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                 const isFlipped = index < flippedIndex;
                 const isCover = index === 0;
                 
-                // DATA HESAPLAMA (Kapak hariç index kaydırma)
+
                 const pageData = !isCover ? PAGES[index - 1] : null;
-                // Bir sonraki sayfanın sol tarafı için data (index + 1 değil, direkt index çünkü sol sayfa current index oluyor çevrildiğinde)
+
                 const leftPageData = index < PAGES.length ? PAGES[index] : null;
 
                 let zIndex = 0;
@@ -283,21 +282,21 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                       }
                     }}
                   >
-                    {/* --- ÖN YÜZ (Sağ Sayfa) --- */}
+
                     <div 
                       className="absolute inset-0 w-full h-full rounded-r-lg overflow-hidden flex flex-col items-center justify-center"
                       style={{ backfaceVisibility: 'hidden' }}
                     >
-                      {/* KAPAK */}
+
                       {isCover && (
                         <div className="flex flex-col items-center justify-center select-none p-4">
                             <h1 className="text-5xl font-serif text-[#e0c097] drop-shadow-lg tracking-[0.2em] opacity-90">Doğum Günü</h1>
                             <div className="w-12 h-0.5 bg-[#e0c097]/40 my-4 rounded-full" />
-                            <span className="text-[10px] text-[#e0c097]/60 tracking-[0.4em] uppercase">Mektupları</span>
+                            <span className="text-[10px] text-[#e0c097]/60 tracking-[0.4em] uppercase">Hediye Notları</span>
                         </div>
                       )}
 
-                      {/* İÇ SAYFA (SAĞ) - Mektup Zarfı */}
+
                       {!isCover && pageData && (
                         <div className="flex items-center justify-center w-full h-full p-8">
                           <div 
@@ -308,8 +307,8 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                             }}
                             onClick={(e) => handleItemClick(e, index)}
                           >
-                             {/* Zarf efekti */}
-                             <div className="absolute top-0 left-0 w-full h-full border-t border-l border-white/20 pointer-events-none" />
+
+                             <div className="absolute top-0 left-0 w-full h-full pointer-events-none" />
                              
                              <div className="w-full h-full flex items-center justify-center opacity-30">
                                 <span className="text-white text-4xl font-serif" style={{ fontFamily: '"Dancing Script", cursive' }}>
@@ -325,7 +324,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                       )}
                     </div>
 
-                    {/* --- ARKA YÜZ (Sol Sayfa) --- */}
+
                     <div 
                       className="absolute inset-0 w-full h-full rounded-l-lg overflow-hidden flex items-center justify-center"
                       style={{ 
@@ -335,7 +334,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                         backgroundImage: "url('/images/paper-texture.jpg')"
                       }}
                     >
-                      {/* SOL SAYFA İÇERİĞİ */}
+
                       {leftPageData && (
                         <div className="text-center p-8 opacity-80 select-none w-full">
                             <h3 

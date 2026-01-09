@@ -18,14 +18,10 @@ const SkyScene = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 1.5 }}
-      // GÜNCELLEME: Ana arka plan rengi çok koyu mor yapıldı
+
       className="fixed inset-0 z-50 w-full h-full overflow-hidden bg-[#1a0b2e]"
     >
-      {/* 
-         GÜNCELLEME: Mor Nebula Efekti (Radial Gradient)
-         Ortada daha açık ve canlı bir mor (#7e22ce), 
-         dışlara doğru koyulaşan derin mor (#3b0764) ve en dışta lacivert/siyah (#0f0518).
-      */}
+
       <div 
         className="absolute inset-0 opacity-90"
         style={{
@@ -33,16 +29,16 @@ const SkyScene = () => {
         }}
       />
       
-      {/* Yıldız Efekti (Doku) */}
+
       <div className="absolute inset-0 opacity-50" style={{ 
         backgroundImage: 'radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px)', 
         backgroundSize: '40px 40px' 
       }}></div>
 
-      {/* Ekstra Atmosferik Bulutlar (Opsiyonel - Daha organik durması için) */}
+
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 mix-blend-overlay"></div>
 
-      {/* Geri Dön Butonu */}
+
       <button 
         onClick={handleBack}
         className="absolute top-8 left-8 z-[60] flex items-center gap-2 px-5 py-2.5 text-white/80 transition-all duration-300 rounded-full group hover:text-white hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/30"
@@ -53,7 +49,7 @@ const SkyScene = () => {
         </span>
       </button>
 
-      {/* Oyun Alanı */}
+
       <div className="relative z-10 flex items-center justify-center w-full h-full p-4">
         <ConstellationGame />
       </div>
