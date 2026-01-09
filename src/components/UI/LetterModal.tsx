@@ -44,10 +44,6 @@ const LetterModal = ({ isOpen, onClose }: Props) => {
               </button>
 
               <h2 className="text-3xl font-serif text-accent mb-6">Mutlu Yıllar...</h2>
-              
-              <div className="prose prose-lg font-serif leading-relaxed text-gray-800 whitespace-pre-wrap">
-                {letterContent}
-              </div>
 
               <div className="mt-12 text-right font-handwriting text-gray-500">
                 — Ocak Sığınağı'ndan sevgilerle.
