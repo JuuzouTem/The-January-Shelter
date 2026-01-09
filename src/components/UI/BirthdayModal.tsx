@@ -37,7 +37,7 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
           .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         `}</style>
 
-        {/* --- ARKA PLAN --- */}
+
         <motion.div
           className="absolute inset-0 w-full h-full"
           initial={{ backgroundColor: '#fce4ec00' }}
@@ -46,7 +46,7 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
           onClick={() => { if(isOpened) onClose(); }}
         />
 
-        {/* --- TALİMAT YAZISI --- */}
+
         {!isOpened && (
           <motion.p
             initial={{ opacity: 0 }}
@@ -58,7 +58,7 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
           </motion.p>
         )}
 
-        {/* --- MEKTUP KARTI --- */}
+
         <motion.div
           className="absolute bg-[#eee] shadow-[0_10px_20px_rgba(0,0,0,0.19),0_6px_6px_rgba(0,0,0,0.23)] rounded-md overflow-hidden z-10 font-quicksand text-justify leading-relaxed flex flex-col"
           style={{ 
@@ -107,7 +107,7 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
           </div>
         </motion.div>
 
-        {/* --- KALP İKONU (GÜNCELLENDİ: CANLI KIRMIZI) --- */}
+
         <motion.div
             className="absolute z-20 cursor-pointer"
             onClick={(e) => {
@@ -125,7 +125,7 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
                 animate={{ scale: [1, 1.15, 1, 0.9, 1] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-                {/* Değişiklik Burası: text-red-600 ve fill-red-600 */}
+
                 <Heart 
                     className="w-[50px] h-[50px] md:w-[60px] md:h-[60px] text-[#c71212] fill-[#c51c1c] drop-shadow-lg" 
                     strokeWidth={1}

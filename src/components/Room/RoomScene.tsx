@@ -8,7 +8,6 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 import { useGame } from '@/context/GameContext';
 import { quotes } from '@/data/quotes';
 
-// Bileşenler
 import TeaCup from './TeaCup';
 import PlantGlitch from './PlantGlitch';
 import RadioPlayer from './RadioPlayer';
@@ -19,7 +18,6 @@ import PolaroidGallery from './PolaroidGallery';
 import BirthdayModal from '../UI/BirthdayModal';
 
 const RoomScene = () => {
-  // Sesi ve ID'sini tutacak referanslar
   const windSoundRef = useRef<Howl | null>(null);
   const windIdRef = useRef<number | null>(null);
 
@@ -31,9 +29,7 @@ const RoomScene = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [currentQuote, setCurrentQuote] = useState("");
 
-  // --- RÜZGAR SESİ BAŞLATMA (DÜZELTİLMİŞ HALİ) ---
   useEffect(() => {
-    // 1. Sesi yerel bir değişkene atıyoruz (Strict Mode fix)
     const sound = new Howl({
       src: ['/sounds/wind.mp3'],
       loop: true,
@@ -42,28 +38,21 @@ const RoomScene = () => {
       html5: true
     });
 
-    // 2. Referansımızı güncelliyoruz (Diğer fonksiyonlar erişebilsin diye)
     windSoundRef.current = sound;
 
-    // 3. Sesi başlatıp ID'sini alıyoruz
     const id = sound.play();
     windIdRef.current = id;
 
     console.log("🔊 Rüzgar başlatıldı. Instance ID:", id);
 
-    // 4. TEMİZLİK (EN ÖNEMLİ KISIM)
     return () => {
       console.log("🛑 Temizlik yapılıyor. Kapatılan ID:", id);
-      // Burada ref.current yerine direkt 'sound' değişkenini kullanıyoruz.
-      // Bu sayede "hayalet ses" kalması imkansız hale gelir.
       sound.stop();
       sound.unload();
     };
   }, []);
 
-  // --- RADYO DURUMUNU DİNLEYEN FONKSİYON ---
   const handleRadioStateChange = useCallback((isRadioPlaying: boolean) => {
-    // Ref'ler boşsa işlem yapma
     if (!windSoundRef.current || windIdRef.current === null) return;
 
     const sound = windSoundRef.current;
@@ -73,15 +62,12 @@ const RoomScene = () => {
     console.log(`Radyo: ${isRadioPlaying ? 'ÇALIYOR' : 'DURDU'} - Rüzgar müdahalesi yapılıyor.`);
 
     if (isRadioPlaying) {
-      // Radyo çalıyor: Sesi mevcut seviyesinden 0'a indir
       sound.fade(currentVol, 0, 1000, soundId);
     } else {
-      // Radyo durdu: Sesi mevcut seviyesinden 0.15'e çıkar
       sound.fade(currentVol, 0.15, 1000, soundId);
     }
   }, []);
 
-  // --- DİĞER FONKSİYONLAR ---
   const handleOpenBook = () => {
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     setCurrentQuote(randomQuote);
@@ -111,7 +97,6 @@ const RoomScene = () => {
 
       <img src="/images/room-bg.png" alt="Room Background" className="absolute inset-0 w-full h-full object-fill -z-50 opacity-90" />
 
-      {/* --- EŞYALAR --- */}
       <div className="absolute top-[38%] right-[14%] z-10 w-auto">
         <div className="scale-10 origin-top-right"><PolaroidGallery /></div>
       </div>
@@ -122,7 +107,6 @@ const RoomScene = () => {
          <PlantGlitch />
       </motion.div>
 
-      {/* RADYO: Prop'u geçiyoruz */}
       <div className="absolute bottom-[44.2%] left-[52%] z-20 w-[3vw] max-w-[180px]">
          <RadioPlayer onPlayStateChange={handleRadioStateChange} />
       </div>

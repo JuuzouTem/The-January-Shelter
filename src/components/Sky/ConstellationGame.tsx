@@ -7,10 +7,10 @@ import Confetti from 'react-confetti';
 import { Howl } from 'howler';
 import { useGame } from '@/context/GameContext'; 
 
-// --- TİP TANIMLAMALARI ---
+
 type Point = { id: number; x: number; y: number };
 type Connection = { from: number; to: number };
-// Duration'ı da tipe ekledik
+
 type BgStar = { id: number; x: number; y: number; size: number; delay: number; duration: number; opacity: number };
 
 const ConstellationGame = () => {
@@ -29,12 +29,12 @@ const ConstellationGame = () => {
       intro: new Howl({ 
         src: ['/sounds/cons_sound.mp3'], 
         volume: 0.5,
-        html5: true // Tarayıcı uyumluluğu için bunu tutmak iyidir
+        html5: true
       }), 
     };
   }, []);
 
-  // --- ARKA PLAN YILDIZLARI OLUŞTURMA ---
+
   useEffect(() => {
     const stars = Array.from({ length: 50 }).map((_, i) => ({
       id: i,
@@ -42,7 +42,7 @@ const ConstellationGame = () => {
       y: Math.random() * 100,      
       size: Math.random() * 3 + 1, 
       delay: Math.random() * 5,
-      duration: 3 + Math.random() * 4, // Süreyi burada hesaplayıp kaydediyoruz
+      duration: 3 + Math.random() * 4,
       opacity: Math.random() * 0.5 + 0.1 
     }));
     setBackgroundStars(stars);
@@ -129,13 +129,13 @@ const ConstellationGame = () => {
         }
         `}</style>
 
-        {/* --- ARKA PLAN YILDIZLARI (DÜZELTİLMİŞ KISIM) --- */}
+
         <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
             {backgroundStars.map((star) => (
                 <div
                     key={`bg-star-${star.id}`}
                     className="star-bg"
-                    // STİL KISMINI AYIRDIK - ÇATIŞMAYI ÖNLEDİK
+
                     style={{
                         left: `${star.x}%`,
                         top: `${star.y}%`,
@@ -143,7 +143,7 @@ const ConstellationGame = () => {
                         height: `${star.size}px`,
                         opacity: star.opacity,
                         boxShadow: `0 0 ${star.size + 2}px rgba(255, 255, 255, 0.4)`,
-                        // Kısaltma (shorthand) yerine açık özellikler kullandık:
+
                         animationName: 'twinkle',
                         animationDuration: `${star.duration}s`,
                         animationIterationCount: 'infinite',
@@ -156,7 +156,7 @@ const ConstellationGame = () => {
 
       <div className="relative w-full h-full max-w-[500px] max-h-[750px] z-10">
       
-         {/* MÜHÜR SVG */}
+
          <div className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center opacity-80 z-0">
               <div className="w-full h-full -translate-x-[59px] -translate-y-[-15px]">
              <svg 
@@ -173,7 +173,7 @@ const ConstellationGame = () => {
         </div>
     </div>
 
-        {/* ÇİZGİLER */}
+
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
             {connections.map((conn, index) => {
             const p1 = points.find((p) => p.id === conn.from);
@@ -198,7 +198,7 @@ const ConstellationGame = () => {
             })}
         </svg>
 
-        {/* OYUN İÇİ ETKİLEŞİMLİ YILDIZLAR */}
+
       <div className="absolute inset-0 w-full h-full z-20 pointer-events-none">
         {points.map((point) => {
           const isActive = activePoints.includes(point.id);
@@ -218,7 +218,7 @@ const ConstellationGame = () => {
         })}
       </div>
       
-      {/* MÜHRÜ AÇ BUTONU */}
+      
       <AnimatePresence>
         {isCompleted && (
            <motion.div 
