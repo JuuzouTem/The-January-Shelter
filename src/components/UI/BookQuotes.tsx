@@ -143,12 +143,9 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   drag
                   dragMomentum={false}
                   whileDrag={{ scale: 1.05, cursor: 'grabbing', rotate: 2 }}
-                  dragElastic={0.1}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
-                  className="relative shadow-2xl rounded-sm flex flex-col items-center cursor-grab overflow-hidden touch-none"
+                  className="relative shadow-2xl rounded-sm flex flex-col items-center overflow-hidden cursor-grab"
                   style={{ 
-
+                    touchAction: 'none',
                     width: activePageData.orientation === 'portrait' 
                            ? 'min(90vw, 400px)' 
                            : 'min(90vw, 600px)',
@@ -157,7 +154,6 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                             : 'min(80vh, 400px)',
                     backgroundColor: activePageData.color,
                     backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.1%22/%3E%3C/svg%3E")',
-                    touchAction: 'none'
                   }}
                   initial={{ scale: 0.2, opacity: 0, y: 100 }}
                   animate={{ 
@@ -169,8 +165,10 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   }}
                   exit={{ scale: 0.2, opacity: 0, transition: { duration: 0.2 } }}
                   transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                  
+                  onClick={(e) => e.stopPropagation()}
                 >
+
+
 
                     <button
                         onClick={closeActiveItem}
@@ -183,14 +181,18 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
 
                     <div className="w-full h-full flex flex-col relative">
 
-                       <div className="flex-1 w-full overflow-y-auto custom-scrollbar flex items-center px-10 py-12">
+                       <div 
+                          className="flex-1 w-full overflow-y-auto custom-scrollbar flex items-center px-10 py-12"
+                          style={{ touchAction: 'pan-y' }}
+                          onPointerDown={(e) => e.stopPropagation()}
+                       >
                            <p 
                               className="w-full font-serif leading-relaxed text-left whitespace-pre-wrap select-none"
                               style={{ 
                                 fontFamily: '"Dancing Script", cursive, serif',
                                 color: '#1a237e',
                                 opacity: 0.9,
-                                fontSize: activePageData.orientation === 'landscape' ? '1.5rem' : '1.25rem', // Yatayda yazı biraz daha büyük olabilir
+                                fontSize: activePageData.orientation === 'landscape' ? '1.5rem' : '1.25rem',
                                 mixBlendMode: 'multiply',
                                 textShadow: '0 0 1px rgba(26, 35, 126, 0.1)'
                               }}
@@ -217,8 +219,8 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
             initial={{ scale: 0.8, y: 100 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.5, opacity: 0 }}
-            className={`relative ${activeItemIndex === null ? 'cursor-grab touch-none' : ''}`}
-            style={{ perspective: '1500px', touchAction: activeItemIndex === null ? 'none' : 'auto' }}
+            className={`relative ${activeItemIndex === null ? 'cursor-grab' : ''}`}
+            style={{ perspective: '1500px' }}
           >
             
             {activeItemIndex === null && (
