@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Howl } from 'howler';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Disc } from 'lucide-react';
@@ -19,6 +20,7 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
   const [trackState, setTrackState] = useState(0); 
   const [currentSong, setCurrentSong] = useState<Song>(standardMusicList[0]);
   const [playCount, setPlayCount] = useState(0); // Şarkı sayacı
+  const [mounted, setMounted] = useState(false);
   const soundRef = useRef<Howl | null>(null);
 
   const getThemeStyles = () => {
@@ -40,7 +42,7 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
         border: "rgba(255, 255, 255, 0.9)",
         shadow: "0 0 0px rgba(0,0,0,0)",
         discGradient: "linear-gradient(135deg, #000000, #ffffff)",
-        labelText: "THE MASQUERADE",
+        labelText: "DANGEROUSLY YOURS",
         labelColor: "#d1d5db",
         songTitleColor: "#ffffff",
         iconColor: "#ffffff"
