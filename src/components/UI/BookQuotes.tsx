@@ -258,6 +258,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                     key={index}
                     className="absolute right-0 top-0 w-[300px] h-full origin-left rounded-r-lg shadow-md cursor-pointer"
                     style={{
+                      WebkitTapHighlightColor: 'transparent',
                       zIndex: zIndex,
                       transformStyle: 'preserve-3d',
                       backgroundColor: isCover ? '#5d4037' : '#fdf6e3',
@@ -302,6 +303,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                           <div 
                             className="w-[140px] h-[200px] shadow-inner rounded-sm cursor-pointer hover:scale-105 transition-transform relative"
                             style={{ 
+                              WebkitTapHighlightColor: 'transparent',
                               backgroundColor: pageData.color,
                               boxShadow: 'inset 0 0 20px rgba(0,0,0,0.1), 2px 4px 6px rgba(0,0,0,0.2)'
                             }}
