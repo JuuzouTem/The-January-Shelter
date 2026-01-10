@@ -144,6 +144,8 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   dragMomentum={false}
                   whileDrag={{ scale: 1.05, cursor: 'grabbing', rotate: 2 }}
                   dragElastic={0.1}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   className="relative shadow-2xl rounded-sm flex flex-col items-center cursor-grab overflow-hidden touch-none"
                   style={{ 
 
@@ -167,7 +169,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   }}
                   exit={{ scale: 0.2, opacity: 0, transition: { duration: 0.2 } }}
                   transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                  onClick={(e) => e.stopPropagation()}
+                  
                 >
 
                     <button
