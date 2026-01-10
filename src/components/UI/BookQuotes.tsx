@@ -143,9 +143,9 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   drag
                   dragMomentum={false}
                   whileDrag={{ scale: 1.05, cursor: 'grabbing', rotate: 2 }}
-                  className="relative shadow-2xl rounded-sm flex flex-col items-center overflow-hidden cursor-grab"
+                  className="relative shadow-2xl rounded-sm flex flex-col items-center cursor-grab overflow-hidden"
                   style={{ 
-                    touchAction: 'none',
+
                     width: activePageData.orientation === 'portrait' 
                            ? 'min(90vw, 400px)' 
                            : 'min(90vw, 600px)',
@@ -168,8 +168,6 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   onClick={(e) => e.stopPropagation()}
                 >
 
-
-
                     <button
                         onClick={closeActiveItem}
                         onPointerDown={(e) => e.stopPropagation()}
@@ -181,18 +179,14 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
 
                     <div className="w-full h-full flex flex-col relative">
 
-                       <div 
-                          className="flex-1 w-full overflow-y-auto custom-scrollbar flex items-center px-10 py-12"
-                          style={{ touchAction: 'pan-y' }}
-                          onPointerDown={(e) => e.stopPropagation()}
-                       >
+                       <div className="flex-1 w-full overflow-y-auto custom-scrollbar flex items-center px-10 py-12">
                            <p 
                               className="w-full font-serif leading-relaxed text-left whitespace-pre-wrap select-none"
                               style={{ 
                                 fontFamily: '"Dancing Script", cursive, serif',
                                 color: '#1a237e',
                                 opacity: 0.9,
-                                fontSize: activePageData.orientation === 'landscape' ? '1.5rem' : '1.25rem',
+                                fontSize: activePageData.orientation === 'landscape' ? '1.5rem' : '1.25rem', // Yatayda yazı biraz daha büyük olabilir
                                 mixBlendMode: 'multiply',
                                 textShadow: '0 0 1px rgba(26, 35, 126, 0.1)'
                               }}
