@@ -33,7 +33,7 @@ const RoomScene = () => {
     const sound = new Howl({
       src: ['/sounds/wind.mp3'],
       loop: true,
-      volume: 0.15,
+      volume: 0.05,
       autoplay: false,
       html5: true
     });
