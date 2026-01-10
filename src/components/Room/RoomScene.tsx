@@ -120,7 +120,7 @@ const RoomScene = () => {
             initial={{ opacity: 0, scale: 1 }}
             animate={{ opacity: 1, scale: 1 }}
             whileHover={{ scale: 1.1 }}
-            className="absolute bottom-[21%] left-[40%] z-25 w-[12vw] max-w-[360px] cursor-pointer"
+            className="absolute bottom-[21%] left-[40%] z-19 w-[12vw] max-w-[360px] cursor-pointer"
         >
             <InteractiveItem label="Doğum Günü" onClick={handleCakeClick} className="w-full h-full">
                 <img src="/images/items/cake.png" alt="Birthday Cake" className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]" />
