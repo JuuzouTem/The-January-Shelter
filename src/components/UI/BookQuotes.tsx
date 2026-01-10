@@ -45,7 +45,7 @@ const PAGES = [
     subtitle: "The One Cold Star",
     color: '#AED9E0',
     orientation: 'portrait',
-    content: "- You must tell her the truth. Before it's...\n- Before it's too late!\n+ Tell her the truth?\n+ Tell her the... truth so that she will watch the stars through tears?\n+ Instead of following the one cold star that is her destiny?\n+ No, no Elvear...\n+ Let her think, I never loved her...",
+    content: "- You must tell her the truth. Before it's...\n- Before it's too late!\n+ Tell her the truth?\n+ Tell her the.. truth so that she will watch the stars through tears?\n+ Instead of following the one cold star that is her destiny?\n+ No, no Elvear...\n+ Let her think, I never loved her...",
     date: "3.01.26"
   },
   {
@@ -54,7 +54,7 @@ const PAGES = [
     subtitle: "Parlayan Kuyruklu yıldız",
     color: '#B8E0D2',
     orientation: 'portrait',
-    content: "- Oh Kevin, dediklerini duydun mu?\n- Gökyüzünde parıldayan bir kayan yıldızmışım onlar için.\n- Sence ben bir parıltı kadar mıyım?\n+ Bırak gökyüzü onların olsun karanlığa gömüldüğünde siyaha bakan ben olacağım, yetmez mi?",
+    content: "- Oh Kevin, dediklerini duydun mu?\n- Gökyüzünde parıldayan bir kayan yıldızmışım onlar için.\n- Sence ben bir parıltı kadar mıyım?\n+ Bırak gökyüzü onların olsun.\n+ Karanlığa gömüldüğünde siyaha bakan ben olacağım, yetmez mi?",
     date: "8.01.26"
   },
   {
@@ -63,7 +63,7 @@ const PAGES = [
     subtitle: "Foolish Reason",
     color: '#FFF5BA',
     orientation: 'portrait',
-    content: "- Once I told you \"I'd kissed a thousand women\" it was a lie.\n+ I know\n- I've only kissed two or three hundred.\n- Now, how many men have you kissed?\n+ Very few.\n- But you offered me a kiss, why?\n+ Such a foolish reason I'm afraid.\n+ I just... wanted to kiss you.",
+    content: "- Once I told you \"I'd kissed a thousand women\" it was a lie.\n+ I know\n- I've only kissed two or three hundred.\n- Now, how many men have you kissed?\n+ Very few.\n- But you offered me a kiss, why?\n+ Such a foolish reason I'm afraid.\n+ I just.. wanted to kiss you.",
     date: "2.01.26"
   },
   {
@@ -72,7 +72,7 @@ const PAGES = [
     subtitle: "Anlamak",
     color: '#D7CCC8',
     orientation: 'landscape',
-    content: "- Bir benle karşılaştım rüyamda,\n- Tek bir kelime etmedik.\n- Süzüp gitti sadece.\n- Yine de hissettim dediklerini.\n- Söylesene, anlamak için ille de konuşmak mı gerekli?",
+    content: "- Bir benle karşılaştım rüyamda.\n- Tek bir kelime etmedik.\n- Süzüp gitti sadece.\n- Yine de hissettim dediklerini.\n- Söylesene, anlamak için ille de konuşmak mı gerekli?",
     date: "8.01.26"
   },
   {
@@ -195,7 +195,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                                 fontFamily: '"Dancing Script", cursive, serif',
                                 color: '#1a237e',
                                 opacity: 0.9,
-                                fontSize: activePageData.orientation === 'landscape' ? '1.5rem' : '1.25rem', // Yatayda yazı biraz daha büyük olabilir
+                                fontSize: activePageData.orientation === 'landscape' ? '1.5rem' : '1.25rem',
                                 mixBlendMode: 'multiply',
                                 textShadow: '0 0 1px rgba(26, 35, 126, 0.1)'
                               }}

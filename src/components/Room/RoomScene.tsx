@@ -42,14 +42,6 @@ const RoomScene = () => {
 
     const id = sound.play();
     windIdRef.current = id;
-
-    console.log("🔊 Rüzgar başlatıldı. Instance ID:", id);
-
-    return () => {
-      console.log("🛑 Temizlik yapılıyor. Kapatılan ID:", id);
-      sound.stop();
-      sound.unload();
-    };
   }, []);
 
   const handleRadioStateChange = useCallback((isRadioPlaying: boolean) => {
@@ -58,8 +50,6 @@ const RoomScene = () => {
     const sound = windSoundRef.current;
     const soundId = windIdRef.current;
     const currentVol = sound.volume();
-
-    console.log(`Radyo: ${isRadioPlaying ? 'ÇALIYOR' : 'DURDU'} - Rüzgar müdahalesi yapılıyor.`);
 
     if (isRadioPlaying) {
       sound.fade(currentVol, 0, 1000, soundId);
@@ -75,7 +65,7 @@ const RoomScene = () => {
   };
 
   const handleCakeClick = () => {
-     const yaySound = new Howl({ src: ['/sounds/yey.mp3'], volume: 0.6 });
+     const yaySound = new Howl({ src: ['/sounds/yey.mp3'], volume: 0.5 });
      yaySound.play();
      setShowConfetti(true);
      setTimeout(() => { setIsBirthdayModalOpen(true); }, 500);

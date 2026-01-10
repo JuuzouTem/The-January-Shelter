@@ -31,7 +31,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     sounds.current = {
       'wind': new Howl({ src: ['/sounds/wind.mp3'], loop: true, volume: 0.2 }),
-      'glitch': new Howl({ src: ['/sounds/glitch.mp3'], volume: 0.5 }),
+      'glitch': new Howl({ src: ['/sounds/plant.mp3'], volume: 0.5 }),
       'hoot': new Howl({ src: ['/sounds/hoot.mp3'], volume: 0.6 }),
       'click': new Howl({ src: ['/sounds/hoot.mp3'], volume: 0.3, rate: 2.0 }),
       'pop': new Howl({ src: ['/sounds/hoot.mp3'], volume: 0.2, rate: 3.0 }),
