@@ -24,11 +24,11 @@ const ConstellationGame = () => {
 
   const sounds = useMemo(() => {
     return {
-      starClick: new Howl({ src: ['/sounds/glitch1.mp3'], volume: 0.2, rate: 3.0 }), 
+      starClick: new Howl({ src: ['/sounds/home1.mp3'], volume: 0.2, rate: 1.0 }), 
       success: new Howl({ src: ['/sounds/cons.mp3'], volume: 0.2 }), 
       intro: new Howl({ 
         src: ['/sounds/cons_sound.mp3'], 
-        volume: 0.5,
+        volume: 0.4,
         html5: true
       }), 
     };

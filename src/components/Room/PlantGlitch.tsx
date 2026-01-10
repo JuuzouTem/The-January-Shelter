@@ -9,7 +9,7 @@ const PlantGlitch = () => {
   const [isShaking, setIsShaking] = useState(false);
 
   const interactSound = new Howl({
-    src: ['/sounds/glitch.mp3'], 
+    src: ['/sounds/plant.mp3'], 
     volume: 0.5,
   });
 
