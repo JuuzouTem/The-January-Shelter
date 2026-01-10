@@ -179,7 +179,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
 
                     <div className="w-full h-full flex flex-col relative">
 
-                       <div className="flex-1 w-full overflow-y-auto custom-scrollbar flex items-center px-10 py-12">
+                       <div className="flex-1 w-full overflow-hidden flex items-center px-10 py-12">
                            <p 
                               className="w-full font-serif leading-relaxed text-left whitespace-pre-wrap select-none"
                               style={{ 
