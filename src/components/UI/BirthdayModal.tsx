@@ -97,6 +97,9 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
                <p>
                   &emsp; https://juuzoutem.github.io/birthday/
                </p>
+               <p>
+                  &emsp; Bulamadın mı? Radyoya biraz daha göz atmak isteyebilirsin.
+               </p>
             </div>
 
             <br />
