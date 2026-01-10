@@ -11,12 +11,14 @@ interface RadioPlayerProps {
   onPlayStateChange?: (isPlaying: boolean) => void;
 }
 
-const EASTER_EGG_CHANCE = 0.05;
+const SONGS_PER_CYCLE = 12; // Her 12 şarkıda bir şans artacak
+const CHANCE_INCREMENT = 0.05; // Her döngüde artacak şans oranı (%5)
 
 const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackState, setTrackState] = useState(0); 
   const [currentSong, setCurrentSong] = useState<Song>(standardMusicList[0]);
+  const [playCount, setPlayCount] = useState(0); // Şarkı sayacı
   const soundRef = useRef<Howl | null>(null);
 
   const getThemeStyles = () => {
@@ -84,22 +86,49 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
   };
 
   const handleNext = () => {
+    // 1. Durum: Easter Egg Intro'su çalıyor -> Main'e geç
     if (trackState === -1) {
       setTrackState(-2);
       playSound(easterEggSongs.main);
       return;
     }
+
+    // 2. Durum: Easter Egg Main çalıyor -> Normale dön (Rastgele bir şarkı)
     if (trackState === -2) {
       const nextIndex = Math.floor(Math.random() * standardMusicList.length);
       setTrackState(nextIndex);
       playSound(standardMusicList[nextIndex]);
       return;
     }
+
+    // 3. Durum: Normal Akış
+    const nextCount = playCount + 1;
+    setPlayCount(nextCount);
+
+    // Olasılık Hesabı:
+    // playCount 1-12 arası: cycle 0 -> %0 şans
+    // playCount 13-24 arası: cycle 1 -> %5 şans
+    // playCount 25-36 arası: cycle 2 -> %10 şans
+    const cycle = Math.floor((nextCount - 1) / SONGS_PER_CYCLE);
+    const currentChance = cycle * CHANCE_INCREMENT;
+
     const randomChance = Math.random();
-    if (randomChance < EASTER_EGG_CHANCE) {
+    
+    // Debug için konsola yazdırabilirsin (Geliştirme bitince silersin)
+    console.log(`Song #${nextCount} | Cycle: ${cycle} | Chance: ${currentChance} | Rolled: ${randomChance.toFixed(2)}`);
+
+    if (currentChance > 0 && randomChance < currentChance) {
+      // Easter Egg Tetiklendi
       setTrackState(-1);
       playSound(easterEggSongs.intro);
+      
+      // RESET MANTIĞI:
+      // "Bir kere çıktıktan sonra %5 şansa geri dönsün"
+      // Sayaçı 12'ye set ediyoruz. Böylece bir sonraki 'handleNext' çağrısında
+      // playCount 13 olacak -> (13-1)/12 = 1. döngü -> %5 şans ile başlayacak.
+      setPlayCount(SONGS_PER_CYCLE); 
     } else {
+      // Normal sıradaki şarkıya geç
       const nextIndex = (trackState + 1) % standardMusicList.length;
       setTrackState(nextIndex);
       playSound(standardMusicList[nextIndex]);
@@ -107,6 +136,7 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
   };
 
   const handlePrev = () => {
+    // Geriye basmak sayacı etkilememeli, sadece şarkı değiştirir
     let nextIndex = 0;
     if (trackState < 0) {
         nextIndex = standardMusicList.length - 1;
