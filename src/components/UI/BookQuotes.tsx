@@ -143,7 +143,8 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   drag
                   dragMomentum={false}
                   whileDrag={{ scale: 1.05, cursor: 'grabbing', rotate: 2 }}
-                  className="relative shadow-2xl rounded-sm flex flex-col items-center cursor-grab overflow-hidden"
+                  dragElastic={0.1}
+                  className="relative shadow-2xl rounded-sm flex flex-col items-center cursor-grab overflow-hidden touch-none"
                   style={{ 
 
                     width: activePageData.orientation === 'portrait' 
@@ -154,6 +155,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                             : 'min(80vh, 400px)',
                     backgroundColor: activePageData.color,
                     backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.1%22/%3E%3C/svg%3E")',
+                    touchAction: 'none'
                   }}
                   initial={{ scale: 0.2, opacity: 0, y: 100 }}
                   animate={{ 
@@ -213,8 +215,8 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
             initial={{ scale: 0.8, y: 100 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.5, opacity: 0 }}
-            className={`relative ${activeItemIndex === null ? 'cursor-grab' : ''}`}
-            style={{ perspective: '1500px' }}
+            className={`relative ${activeItemIndex === null ? 'cursor-grab touch-none' : ''}`}
+            style={{ perspective: '1500px', touchAction: activeItemIndex === null ? 'none' : 'auto' }}
           >
             
             {activeItemIndex === null && (
