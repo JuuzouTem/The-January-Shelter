@@ -45,7 +45,7 @@ const OwlAnim = () => {
           src="/images/items/owl.png" 
           alt="Baykuş"
           className="w-full h-full object-contain drop-shadow-xl select-none pointer-events-none"
-          animate={isHooting ? { rotate: [0, -10, 10, 0], scale: [1, 1.1, 1] } : { y: [0, -5, 0] }}
+          animate={isHooting ? { rotate: [0, -10, 10, 0], scale: [1, 1.1, 1] } : { y: [0, 0, 0] }}
           transition={isHooting ? { duration: 0.5 } : { duration: 4, repeat: Infinity, ease: "easeInOut" }} 
         />
       </div>
