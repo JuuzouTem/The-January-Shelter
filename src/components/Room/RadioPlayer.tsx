@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Howl } from 'howler';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Disc } from 'lucide-react';
@@ -12,16 +11,39 @@ interface RadioPlayerProps {
   onPlayStateChange?: (isPlaying: boolean) => void;
 }
 
+// Dışarıdan erişilebilecek fonksiyonların tipini tanımlıyoruz
+export interface RadioPlayerHandle {
+  playSpecificSong: (id: number) => void;
+}
+
 const SONGS_PER_CYCLE = 12;
 const CHANCE_INCREMENT = 0.05;
 
-const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
+// forwardRef ile bileşeni sarmalıyoruz
+const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlayStateChange }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackState, setTrackState] = useState(0); 
   const [currentSong, setCurrentSong] = useState<Song>(standardMusicList[0]);
   const [playCount, setPlayCount] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [mounted, setMounted] = useState(false);
   const soundRef = useRef<Howl | null>(null);
+
+  // --- YENİ EKLENEN KISIM: Dışarıdan erişim için fonksiyon ---
+  useImperativeHandle(ref, () => ({
+    playSpecificSong: (targetId: number) => {
+      // Listeden şarkıyı bul
+      const targetIndex = standardMusicList.findIndex(s => s.id === targetId);
+      const targetSong = standardMusicList.find(s => s.id === targetId);
+
+      if (targetSong && targetIndex !== -1) {
+        // State'leri güncelle ve çal
+        setTrackState(targetIndex);
+        playSound(targetSong);
+      }
+    }
+  }));
+  // -----------------------------------------------------------
 
   const getThemeStyles = () => {
     if (trackState === -1) {
@@ -63,7 +85,9 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
   const theme = getThemeStyles();
 
   const playSound = (song: Song) => {
+    // Eğer bir ses varsa durdur
     if (soundRef.current) soundRef.current.stop();
+    
     const sound = new Howl({
       src: [song.src],
       html5: true,
@@ -72,7 +96,7 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
     });
     soundRef.current = sound;
     sound.play();
-    setIsPlaying(true);
+    setIsPlaying(true); // Radyoyu açık duruma getir
     setCurrentSong(song);
   };
 
@@ -220,6 +244,9 @@ const RadioPlayer = ({ onPlayStateChange }: RadioPlayerProps) => {
       </AnimatePresence>
     </div>
   );
-};
+});
+
+// Debug için display name eklemek iyi bir pratiktir
+RadioPlayer.displayName = "RadioPlayer";
 
 export default RadioPlayer;
