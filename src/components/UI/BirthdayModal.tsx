@@ -88,17 +88,24 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
             </h1>
             
             <div className="text-[#c51c1c] text-base md:text-[17px] space-y-4">
-               <p>
-                  &emsp; Sitedeki her şeye baktığından emin oldun mu? Lazım olacaklar. 
+               <p className="indent-6">
+                  Sitedeki her şeye baktığından emin oldun mu? Lazım olacaklar. 
                </p>
-               <p>
-                  &emsp; Eğer mektubunda ne yazdığını öğrenmek istiyorsan linke tıklamalısın.
+               <p className="indent-6">
+                  Eğer mektubunda ne yazdığını öğrenmek istiyorsan linke tıklamalısın.
                </p>
-               <p>
-                  &emsp; https://juuzoutem.github.io/birthday/
+               <p className="indent-6">
+                  <a 
+                    href="https://juuzoutem.github.io/birthday/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[#c51c1c] underline hover:text-red-800 transition-colors break-all font-bold"
+                  >
+                    https://juuzoutem.github.io/birthday/
+                  </a>
                </p>
-               <p>
-                  &emsp; Bulamadın mı? Radyoya biraz daha göz atmak isteyebilirsin.
+               <p className="indent-6">
+                  Bulamadın mı? Radyoya biraz daha göz atmak isteyebilirsin.
                </p>
             </div>
 

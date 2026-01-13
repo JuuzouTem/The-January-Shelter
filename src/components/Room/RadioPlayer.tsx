@@ -11,7 +11,6 @@ interface RadioPlayerProps {
   onPlayStateChange?: (isPlaying: boolean) => void;
 }
 
-// Dışarıdan erişilebilecek fonksiyonların tipini tanımlıyoruz
 export interface RadioPlayerHandle {
   playSpecificSong: (id: number) => void;
 }
@@ -19,31 +18,46 @@ export interface RadioPlayerHandle {
 const SONGS_PER_CYCLE = 12;
 const CHANCE_INCREMENT = 0.05;
 
-// forwardRef ile bileşeni sarmalıyoruz
+let globalLastTrackIndex = 0; 
+
 const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlayStateChange }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [trackState, setTrackState] = useState(0); 
-  const [currentSong, setCurrentSong] = useState<Song>(standardMusicList[0]);
+  
+  const [trackState, setTrackState] = useState(globalLastTrackIndex); 
+  
+  const initialSong = trackState >= 0 
+    ? standardMusicList[trackState] 
+    : (trackState === -1 ? easterEggSongs.intro : easterEggSongs.main);
+
+  const [currentSong, setCurrentSong] = useState<Song>(initialSong);
   const [playCount, setPlayCount] = useState(0);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [mounted, setMounted] = useState(false);
+  
   const soundRef = useRef<Howl | null>(null);
 
-  // --- YENİ EKLENEN KISIM: Dışarıdan erişim için fonksiyon ---
+  useEffect(() => {
+    globalLastTrackIndex = trackState;
+  }, [trackState]);
+
+  useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.stop();
+        soundRef.current.unload();
+      }
+    };
+  }, []);
+
   useImperativeHandle(ref, () => ({
     playSpecificSong: (targetId: number) => {
-      // Listeden şarkıyı bul
       const targetIndex = standardMusicList.findIndex(s => s.id === targetId);
       const targetSong = standardMusicList.find(s => s.id === targetId);
 
       if (targetSong && targetIndex !== -1) {
-        // State'leri güncelle ve çal
         setTrackState(targetIndex);
-        playSound(targetSong);
+        playSound(targetSong, targetIndex);
       }
     }
   }));
-  // -----------------------------------------------------------
 
   const getThemeStyles = () => {
     if (trackState === -1) {
@@ -84,9 +98,11 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
 
   const theme = getThemeStyles();
 
-  const playSound = (song: Song) => {
-    // Eğer bir ses varsa durdur
-    if (soundRef.current) soundRef.current.stop();
+  const playSound = (song: Song, index: number) => {
+    if (soundRef.current) {
+        soundRef.current.stop();
+        soundRef.current.unload();
+    }
     
     const sound = new Howl({
       src: [song.src],
@@ -94,34 +110,48 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
       volume: 0.5,
       onend: () => handleNext()
     });
+    
     soundRef.current = sound;
     sound.play();
-    setIsPlaying(true); // Radyoyu açık duruma getir
+    
+    setIsPlaying(true);
     setCurrentSong(song);
+    setTrackState(index);
   };
 
   const togglePlay = () => {
     if (!soundRef.current) {
-      playSound(standardMusicList[0]);
-      setTrackState(0);
+      let songToPlay = standardMusicList[0];
+      
+      if (trackState >= 0 && trackState < standardMusicList.length) {
+          songToPlay = standardMusicList[trackState];
+      } else if (trackState === -1) {
+          songToPlay = easterEggSongs.intro;
+      } else if (trackState === -2) {
+          songToPlay = easterEggSongs.main;
+      }
+
+      playSound(songToPlay, trackState);
     } else {
-      if (isPlaying) soundRef.current.pause();
-      else soundRef.current.play();
-      setIsPlaying(!isPlaying);
+      if (isPlaying) {
+        soundRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        soundRef.current.play();
+        setIsPlaying(true);
+      }
     }
   };
 
   const handleNext = () => {
     if (trackState === -1) {
-      setTrackState(-2);
-      playSound(easterEggSongs.main);
+      playSound(easterEggSongs.main, -2);
       return;
     }
 
     if (trackState === -2) {
       const nextIndex = Math.floor(Math.random() * standardMusicList.length);
-      setTrackState(nextIndex);
-      playSound(standardMusicList[nextIndex]);
+      playSound(standardMusicList[nextIndex], nextIndex);
       return;
     }
 
@@ -130,19 +160,14 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
 
     const cycle = Math.floor((nextCount - 1) / SONGS_PER_CYCLE);
     const currentChance = cycle * CHANCE_INCREMENT;
-
     const randomChance = Math.random();
-    
 
     if (currentChance > 0 && randomChance < currentChance) {
-      setTrackState(-1);
-      playSound(easterEggSongs.intro);
-      
       setPlayCount(SONGS_PER_CYCLE); 
+      playSound(easterEggSongs.intro, -1);
     } else {
       const nextIndex = (trackState + 1) % standardMusicList.length;
-      setTrackState(nextIndex);
-      playSound(standardMusicList[nextIndex]);
+      playSound(standardMusicList[nextIndex], nextIndex);
     }
   };
 
@@ -153,8 +178,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
     } else {
         nextIndex = (trackState - 1 + standardMusicList.length) % standardMusicList.length;
     }
-    setTrackState(nextIndex);
-    playSound(standardMusicList[nextIndex]);
+    playSound(standardMusicList[nextIndex], nextIndex);
   };
 
   useEffect(() => {
@@ -246,7 +270,6 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   );
 });
 
-// Debug için display name eklemek iyi bir pratiktir
 RadioPlayer.displayName = "RadioPlayer";
 
 export default RadioPlayer;

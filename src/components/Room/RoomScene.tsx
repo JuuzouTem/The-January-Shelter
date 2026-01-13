@@ -10,7 +10,6 @@ import { quotes } from '@/data/quotes';
 
 import TeaCup from './TeaCup';
 import PlantGlitch from './PlantGlitch';
-// RadioPlayer ve onun Handle tipini import ediyoruz
 import RadioPlayer, { RadioPlayerHandle } from './RadioPlayer';
 import OwlAnim from './OwlAnim';
 import InteractiveItem from './InteractiveItem';
@@ -22,7 +21,6 @@ const RoomScene = () => {
   const windSoundRef = useRef<Howl | null>(null);
   const windIdRef = useRef<number | null>(null);
   
-  // Radyoya dışarıdan erişmek için ref
   const radioRef = useRef<RadioPlayerHandle>(null);
 
   const { changeScene, isCakeUnlocked } = useGame();
@@ -33,13 +31,8 @@ const RoomScene = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [currentQuote, setCurrentQuote] = useState("");
 
-  // Rüzgar ve Müzik Kontrolü
   useEffect(() => {
-    // --- YENİ EKLENEN KISIM ---
     if (isCakeUnlocked) {
-      // Pasta açıksa rüzgarı hiç çalma.
-      // Bunun yerine radyodan Undertale (ID: 11) müziğini başlat.
-      // setTimeout kullanıyoruz çünkü child component'in mount olması ve ref'in oturması için minik bir süre gerekebilir.
       const timer = setTimeout(() => {
         if (radioRef.current) {
             radioRef.current.playSpecificSong(11);
@@ -48,9 +41,7 @@ const RoomScene = () => {
       
       return () => clearTimeout(timer);
     }
-    // --------------------------
 
-    // Eğer pasta açılmamışsa Rüzgar Sesi çalsın
     const sound = new Howl({
       src: ['/sounds/wind.mp3'],
       loop: true,
@@ -71,7 +62,6 @@ const RoomScene = () => {
   }, [isCakeUnlocked]);
 
   const handleRadioStateChange = useCallback((isRadioPlaying: boolean) => {
-    // Rüzgar sesi yoksa (pasta açıksa), ses kısma işlemi yapmaya gerek yok
     if (!windSoundRef.current || windIdRef.current === null) return;
 
     const sound = windSoundRef.current;
@@ -125,7 +115,6 @@ const RoomScene = () => {
       </motion.div>
 
       <div className="absolute bottom-[44.2%] left-[52%] z-20 w-[3vw] max-w-[180px]">
-         {/* Ref'i buraya bağlıyoruz */}
          <RadioPlayer ref={radioRef} onPlayStateChange={handleRadioStateChange} />
       </div>
 
