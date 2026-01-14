@@ -225,7 +225,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
             }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 backdrop-blur-md border px-6 py-3 rounded-full z-[100]"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-[0.08vw] backdrop-blur-md border px-6 py-3 rounded-full z-[100]"
           >
             <motion.div 
               animate={{ rotate: 360 }} 
@@ -236,7 +236,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
                 <Disc size={24} className="text-white mix-blend-overlay" />
             </motion.div>
 
-            <div className="flex flex-col min-w-[120px]">
+            <div className="flex flex-col min-w-[7vw]">
               <motion.span 
                 animate={{ color: theme.labelColor }}
                 className="text-xs font-medium tracking-wider"

@@ -207,7 +207,7 @@ const RoomScene = () => {
         </motion.div>
       )}
 
-      <div className="absolute bottom-[6.4%] right-[18%] z-20 w-[12vw] max-w-[150px]">
+      <div className="absolute bottom-[6.4%] right-[18%] z-20 w-[11vw] max-w-[150px]">
         <InteractiveItem label="Notlar" onClick={handleOpenBook} className="w-full h-full">
             <img src="/images/items/book.png" alt="Kitap" className="w-full h-auto object-contain -hover:rotate-0 transition-transform duration-500 drop-shadow-2xl" />
         </InteractiveItem>

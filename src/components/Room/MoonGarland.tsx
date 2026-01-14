@@ -11,7 +11,7 @@ const MoonGarland: React.FC<MoonGarlandProps> = ({ onToggleMood, isLit }) => {
   
   const SAG_AMOUNT = 120; 
   
-  const manualAdjustments = [ 8, 5, 5, 3, 2, 3, 5, 5, 8 ];
+  const manualAdjustments = [ 7, 3, 2, 0, 0, 0, 2, 3, 7 ];
 
   const SVG_HEIGHT = SAG_AMOUNT * 2 + 30;
   
