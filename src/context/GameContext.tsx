@@ -14,11 +14,9 @@ interface GameContextType {
   enterShelter: () => void;
   playSound: (type: SoundType) => void;
   
-  // Pasta Durumu
   isCakeUnlocked: boolean;
   unlockCake: () => void;
 
-  // YENİ: Cons (Yıldız) Oyunu Durumu
   isConstellationSolved: boolean;
   solveConstellation: () => void;
 }
@@ -30,7 +28,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   
   const [isCakeUnlocked, setIsCakeUnlocked] = useState(false);
-  // YENİ: Oyunun tamamlanıp tamamlanmadığını tutan state
   const [isConstellationSolved, setIsConstellationSolved] = useState(false);
   
   const musicRef = useRef<Howl | null>(null);
@@ -92,7 +89,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setIsCakeUnlocked(true);
   };
 
-  // YENİ: Fonksiyon
   const solveConstellation = () => {
     setIsConstellationSolved(true);
   };
@@ -107,7 +103,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       playSound,
       isCakeUnlocked, 
       unlockCake,
-      // Yeni değerleri provider'a ekliyoruz
       isConstellationSolved,
       solveConstellation
     }}>

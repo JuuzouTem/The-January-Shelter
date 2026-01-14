@@ -14,7 +14,6 @@ type BgStar = { id: number; x: number; y: number; size: number; delay: number; d
 const ConstellationGame = () => {
   const { width, height } = useWindowSize();
   
-  // GÜNCELLEME: Context'ten yeni değerleri alıyoruz
   const { changeScene, unlockCake, isConstellationSolved, solveConstellation, isCakeUnlocked } = useGame(); 
 
   const points: Point[] = [
@@ -26,13 +25,10 @@ const ConstellationGame = () => {
     { id: 6, x: 54.5, y: 69.5 }, 
   ];
 
-  // GÜNCELLEME: State başlatılırken Context'e bakıyor.
-  // Eğer daha önce çözüldüyse (isConstellationSolved true ise), bütün noktaları aktif başlatıyoruz.
   const [activePoints, setActivePoints] = useState<number[]>(
     isConstellationSolved ? points.map(p => p.id) : []
   );
 
-  // Eğer context'te çözüldü ise completed state'i de true başlasın
   const [isCompleted, setIsCompleted] = useState(isConstellationSolved);
   
   const [showConfetti, setShowConfetti] = useState(false);
@@ -50,7 +46,7 @@ const ConstellationGame = () => {
   const sounds = useMemo(() => {
     return {
       starClick: new Howl({ src: ['/sounds/home1.mp3'], volume: 0.2, rate: 1.0 }), 
-      success: new Howl({ src: ['/sounds/cons.mp3'], volume: 0.2 }), 
+      success: new Howl({ src: ['/sounds/cons.mp3'], volume: 0.5 }), 
       intro: new Howl({ 
         src: ['/sounds/cons_sound.mp3'], 
         volume: 0.4,
@@ -77,7 +73,6 @@ const ConstellationGame = () => {
   }, [sounds]);
 
   const handlePointClick = (id: number) => {
-    // Eğer zaten tamamlandıysa tıklamaya izin verme
     if (activePoints.includes(id) || isCompleted) return;
 
     sounds.starClick.play();
@@ -90,8 +85,6 @@ const ConstellationGame = () => {
         setShowConfetti(true);
         sounds.success.play();
         
-        // GÜNCELLEME: Oyun bittiği an Context'e kaydediyoruz.
-        // Böylece "Mührü Aç"a basmadan çıksa bile geri gelince tamamlanmış görecek.
         solveConstellation(); 
         
       }, 500);
@@ -112,7 +105,6 @@ const ConstellationGame = () => {
   return (
     <div className="relative flex items-center justify-center w-full h-full overflow-hidden">
         
-        {/* CSS ve Arka Plan Yıldızları (Değişiklik yok) */}
         <style jsx>{`
         @keyframes twinkle {
           0% { opacity: 0.7; transform: scale(1); }
@@ -166,7 +158,6 @@ const ConstellationGame = () => {
 
       <div className="relative w-full h-full max-w-[500px] max-h-[750px] z-10">
       
-         {/* Mühür Görseli */}
          <div className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center opacity-80 z-0">
               <div className="w-full h-full -translate-x-[59px] -translate-y-[-15px]">
              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -65 660 950">
@@ -175,7 +166,6 @@ const ConstellationGame = () => {
         </div>
     </div>
 
-        {/* Çizgiler */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
             {connections.map((conn, index) => {
             const p1 = points.find((p) => p.id === conn.from);
@@ -200,7 +190,6 @@ const ConstellationGame = () => {
             })}
         </svg>
 
-      {/* Noktalar (Butonlar) */}
       <div className="absolute inset-0 w-full h-full z-20 pointer-events-none">
         {points.map((point) => {
           const isActive = activePoints.includes(point.id);
@@ -208,7 +197,6 @@ const ConstellationGame = () => {
             <button
               key={point.id}
               onClick={() => handlePointClick(point.id)}
-              // Eğer tamamlandıysa cursor default olsun
               className={`absolute w-10 h-10 flex items-center justify-center pointer-events-auto focus:outline-none bg-transparent border-none p-0 -translate-x-1/2 -translate-y-1/2 ${isCompleted ? 'cursor-default' : 'cursor-pointer'}`}
               style={{ left: `${point.x}%`, top: `${point.y}%` }}
             >
@@ -221,12 +209,6 @@ const ConstellationGame = () => {
         })}
       </div>
       
-      {/* 
-          GÜNCELLEME: Mührü Aç Butonu.
-          Buton SADECE cons tamamlandıysa (isCompleted) VE pasta henüz açılmadıysa (!isCakeUnlocked) görünür.
-          Eğer pasta zaten açıldıysa (yani daha önce butona basıldıysa) ama kullanıcı tekrar Sky ekranına geldiyse
-          cons tamamlanmış görünür ama buton tekrar çıkmaz.
-      */}
       <AnimatePresence>
         {isCompleted && !isCakeUnlocked && (
            <motion.div 

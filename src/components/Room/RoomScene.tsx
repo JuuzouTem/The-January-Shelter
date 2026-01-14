@@ -8,7 +8,6 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 import { useGame } from '@/context/GameContext';
 import { quotes } from '@/data/quotes';
 
-// Mevcut Bileşenler
 import TeaCup from './TeaCup';
 import PlantGlitch from './PlantGlitch';
 import RadioPlayer, { RadioPlayerHandle } from './RadioPlayer';
@@ -18,7 +17,6 @@ import BookQuotes from '../UI/BookQuotes';
 import PolaroidGallery from './PolaroidGallery';
 import BirthdayModal from '../UI/BirthdayModal';
 
-// YENİ BİLEŞENLER
 import MusicBox from './MusicBox';
 import MoonGarland from './MoonGarland';
 
@@ -28,7 +26,6 @@ const RoomScene = () => {
   
   const radioRef = useRef<RadioPlayerHandle>(null);
 
-  // useGame'den isCakeUnlocked verisini alıyoruz
   const { changeScene, isCakeUnlocked } = useGame();
   const { width, height } = useWindowSize();
   
@@ -37,14 +34,11 @@ const RoomScene = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [currentQuote, setCurrentQuote] = useState("");
 
-  // --- GÜNCELLEME 1: Gece Modu Başlangıcı ---
-  // Eğer pasta kilidi açılmışsa (Mühür açıldıysa), oda direkt Gece Modunda başlar.
   const [isMoonLit, setIsMoonLit] = useState(isCakeUnlocked); 
   
   const [isMusicBoxPlaying, setIsMusicBoxPlaying] = useState(false);
   const [isRadioPlaying, setIsRadioPlaying] = useState(false);
 
-  // Rüzgar sesi kontrolü
   const updateWindVolume = useCallback(() => {
     if (!windSoundRef.current || windIdRef.current === null) return;
 
@@ -64,23 +58,18 @@ const RoomScene = () => {
   }, [updateWindVolume]);
 
 
-  // Başlangıç, Rüzgar Sesi ve Undertale Müziği
   useEffect(() => {
-    // Pasta açıldıysa (Mühür açıldıysa) Radyo'dan özel şarkıyı (Undertale) çal
     if (isCakeUnlocked) {
-      // Odaya girer girmez gece modu olsun (State init'te yaptık ama garanti olsun)
       setIsMoonLit(true);
 
       const timer = setTimeout(() => {
         if (radioRef.current) {
-            // Undertale veya özel doğum günü şarkısı (Track 11 varsayımıyla)
             radioRef.current.playSpecificSong(11);
         }
-      }, 500); // Biraz gecikmeli başlasın
+      }, 500);
       return () => clearTimeout(timer);
     }
 
-    // Pasta açık değilse rüzgar sesi çalsın
     const sound = new Howl({
       src: ['/sounds/wind.mp3'],
       loop: true,
@@ -128,7 +117,6 @@ const RoomScene = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Gece Modu Katmanları */}
       <div 
         className="absolute inset-0 pointer-events-none transition-all duration-1000 z-0"
         style={{
@@ -150,7 +138,6 @@ const RoomScene = () => {
         </div>
       )}
 
-      {/* Arka Plan */}
       <img 
         src="/images/room-bg.png" 
         alt="Room Background" 
@@ -160,7 +147,6 @@ const RoomScene = () => {
         }}
       />
 
-      {/* Garland (Işık Açma Kapama) */}
       <div className="absolute top-[16%] left-[19%] w-[70vw] max-w-[1300px] z-40 h-[100px]">
          <MoonGarland isLit={isMoonLit} onToggleMood={() => setIsMoonLit(!isMoonLit)} />
       </div>
