@@ -9,64 +9,67 @@ interface MoonGarlandProps {
 const MoonGarland: React.FC<MoonGarlandProps> = ({ onToggleMood, isLit }) => {
   const moons = ['🌕', '🌖', '🌗', '🌘', '🌑', '🌒', '🌓', '🌔', '🌕'];
   
-  // İpin sarkma miktarı (dikey derinlik)
   const SAG_AMOUNT = 120; 
   
-  // --- MANUEL AYAR KISMI ---
-  // Buradaki her sayı, sırasıyla o ayın konumunu piksel olarak değiştirir.
-  // Eksi (-) değerler ayı YUKARI çeker.
-  // Artı (+) değerler ayı AŞAĞI iter.
-  // 0 değeri matematiksel hesaplamayı olduğu gibi bırakır.
-  // Örnek: [ -5, -2, 0, 0, 0, 0, 0, -2, -5 ] 
-  // (Baştaki ve sondaki 2 taneyi yukarı çekmek için örnek değerler verdim, bunları değiştirerek tam hizala)
-  const manualAdjustments = [ 4, 3, 0, 0, 0, 0, 0, 3, 4 ];
-  // -------------------------
+  const manualAdjustments = [ 8, 5, 5, 3, 2, 3, 5, 5, 8 ];
 
-  // SVG yüksekliğini sabitliyoruz ki ekran küçüldüğünde ipin dikey oranı bozulmasın.
-  const SVG_HEIGHT = SAG_AMOUNT * 2 + 30; // +30 biraz tampon alan
+  const SVG_HEIGHT = SAG_AMOUNT * 2 + 30;
+  
+  // SVG Path verisi (tekrar kullanmak için değişkene aldık)
+  const pathData = `M0,0 Q50,${SAG_AMOUNT * 2} 100,0`;
 
   return (
-    <div className="relative w-full h-full cursor-pointer group" onClick={onToggleMood}>
+    // DEĞİŞİKLİK 1: onClick'i buradan kaldırdık ve 'pointer-events-none' ekledik.
+    // Böylece bu kutunun boş yerlerine tıklayınca arkadaki eşyalar (saksı vb.) çalışacak.
+    <div className="relative w-full h-full group pointer-events-none">
       
       {/* İp Görünümü (SVG) */}
       <svg 
-        className="absolute top-[12px] left-0 w-full pointer-events-none overflow-visible" 
+        className="absolute top-[12px] left-0 w-full overflow-visible" 
         style={{ height: SVG_HEIGHT }}
         viewBox={`0 0 100 ${SVG_HEIGHT}`} 
         preserveAspectRatio="none"
       >
-        {/* Parabolik İp Çizimi */}
+        {/* DEĞİŞİKLİK 2: Tıklama Alanı (Hitbox) */}
+        {/* Bu çizgi görünmezdir (transparent) ama kalındır (strokeWidth 20). 
+            Buna 'pointer-events-auto' ve 'cursor-pointer' vererek ipi tıklanabilir yaptık. */}
         <path 
-            d={`M0,0 Q50,${SAG_AMOUNT * 2} 100,0`}
+            d={pathData}
+            stroke="transparent" 
+            strokeWidth="20" 
+            fill="none" 
+            className="pointer-events-auto cursor-pointer"
+            onClick={onToggleMood}
+        />
+
+        {/* Görünür İnce İp */}
+        {/* Bunun tıklanmasına gerek yok, üstteki şeffaf ip işi görüyor */}
+        <path 
+            d={pathData}
             stroke="#E2E8F0" 
             strokeWidth="0.5" 
             fill="none" 
-            className="opacity-70 drop-shadow-md" 
+            className="opacity-70 drop-shadow-md pointer-events-none" 
         />
       </svg>
 
       {/* Ay Emojileri */}
       <div className="flex justify-between items-start w-full relative z-10 px-0">
         {moons.map((moon, index) => {
-          // 1. Matematiksel Baz Konum (Parabol Formülü)
-          // Bu, ipin matematiksel olarak nerede olduğunu bulur.
           const t = index / (moons.length - 1);
           const baseCurveY = 4 * SAG_AMOUNT * t * (1 - t);
-
-          // 2. Senin Manuel Düzeltmen
-          // Dizideki ilgili değeri alıyoruz (eğer dizi kısa kalırsa hata vermesin diye || 0 diyoruz)
           const adjustment = manualAdjustments[index] || 0;
-
-          // 3. Son Konum
           const finalPosition = baseCurveY + adjustment;
 
           return (
             <motion.div
               key={index}
               whileHover={{ scale: 1.3, rotate: 15 }}
-              className="text-xl md:text-2xl filter drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
-              // Burada finalPosition'ı uyguluyoruz
+              // DEĞİŞİKLİK 3: Her bir ay emojisine 'pointer-events-auto', 'cursor-pointer' ve 'onClick' ekledik.
+              // Ana kapsayıcı pointer-events-none olduğu için bu özellik şart.
+              className="text-xl md:text-2xl filter drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] pointer-events-auto cursor-pointer"
               style={{ marginTop: `${finalPosition}px` }} 
+              onClick={onToggleMood}
             >
               {moon}
             </motion.div>
@@ -75,6 +78,7 @@ const MoonGarland: React.FC<MoonGarlandProps> = ({ onToggleMood, isLit }) => {
       </div>
 
       {/* Etkileşim İpucu */}
+      {/* İpucu kutusu da görünmeli ama tıklamaları engellememeli */}
       <div 
         className="absolute left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{ top: `${SAG_AMOUNT + 40}px` }}

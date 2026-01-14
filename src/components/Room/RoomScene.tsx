@@ -173,7 +173,7 @@ const RoomScene = () => {
         <div className="scale-10 origin-top-right"><PolaroidGallery /></div>
       </div>
 
-      <motion.div className="absolute top-[10%] left-[29%] z-20 w-[20vw] max-w-[150px] origin-top"
+      <motion.div className="absolute top-[10%] left-[29%] z-41 w-[20vw] max-w-[150px] origin-top"
                   animate={{ rotate: [-2, 2, -2] }}
                   transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
          <PlantGlitch />
