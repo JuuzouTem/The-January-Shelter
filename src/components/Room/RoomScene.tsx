@@ -28,6 +28,7 @@ const RoomScene = () => {
   
   const radioRef = useRef<RadioPlayerHandle>(null);
 
+  // useGame'den isCakeUnlocked verisini alıyoruz
   const { changeScene, isCakeUnlocked } = useGame();
   const { width, height } = useWindowSize();
   
@@ -36,13 +37,14 @@ const RoomScene = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [currentQuote, setCurrentQuote] = useState("");
 
-  // --- YENİ STATE'LER ---
-  const [isMoonLit, setIsMoonLit] = useState(false); // Gece Modu / Işık
-  const [isMusicBoxPlaying, setIsMusicBoxPlaying] = useState(false); // Müzik Kutusu Sesi
-  const [isRadioPlaying, setIsRadioPlaying] = useState(false); // Radyo Sesi Takibi
+  // --- GÜNCELLEME 1: Gece Modu Başlangıcı ---
+  // Eğer pasta kilidi açılmışsa (Mühür açıldıysa), oda direkt Gece Modunda başlar.
+  const [isMoonLit, setIsMoonLit] = useState(isCakeUnlocked); 
+  
+  const [isMusicBoxPlaying, setIsMusicBoxPlaying] = useState(false);
+  const [isRadioPlaying, setIsRadioPlaying] = useState(false);
 
-  // --- SES MANTIĞI (GÜNCELLENDİ) ---
-  // Rüzgar sesi, Radyo VEYA Müzik kutusu çalıyorsa kısılmalı.
+  // Rüzgar sesi kontrolü
   const updateWindVolume = useCallback(() => {
     if (!windSoundRef.current || windIdRef.current === null) return;
 
@@ -50,32 +52,35 @@ const RoomScene = () => {
     const soundId = windIdRef.current;
     const currentVol = sound.volume();
 
-    // Eğer Radyo VEYA Müzik Kutusu açıksa rüzgarı sustur (fade out)
     if (isRadioPlaying || isMusicBoxPlaying) {
       sound.fade(currentVol, 0, 1000, soundId);
     } else {
-      // İkisi de kapalıysa rüzgarı geri getir (fade in)
       sound.fade(currentVol, 0.15, 1000, soundId);
     }
   }, [isRadioPlaying, isMusicBoxPlaying]);
 
-  // isRadioPlaying veya isMusicBoxPlaying değiştiğinde sesi güncelle
   useEffect(() => {
     updateWindVolume();
   }, [updateWindVolume]);
 
 
-  // Başlangıç ve Rüzgar Sesi Kurulumu
+  // Başlangıç, Rüzgar Sesi ve Undertale Müziği
   useEffect(() => {
+    // Pasta açıldıysa (Mühür açıldıysa) Radyo'dan özel şarkıyı (Undertale) çal
     if (isCakeUnlocked) {
+      // Odaya girer girmez gece modu olsun (State init'te yaptık ama garanti olsun)
+      setIsMoonLit(true);
+
       const timer = setTimeout(() => {
         if (radioRef.current) {
+            // Undertale veya özel doğum günü şarkısı (Track 11 varsayımıyla)
             radioRef.current.playSpecificSong(11);
         }
-      }, 100);
+      }, 500); // Biraz gecikmeli başlasın
       return () => clearTimeout(timer);
     }
 
+    // Pasta açık değilse rüzgar sesi çalsın
     const sound = new Howl({
       src: ['/sounds/wind.mp3'],
       loop: true,
@@ -94,16 +99,12 @@ const RoomScene = () => {
     };
   }, [isCakeUnlocked]);
 
-  // Radyo Callback Güncellemesi
   const handleRadioStateChange = useCallback((playing: boolean) => {
     setIsRadioPlaying(playing);
-    // updateWindVolume useEffect tarafından tetiklenecek
   }, []);
 
-  // Müzik Kutusu Callback
   const handleMusicBoxStateChange = useCallback((isOpen: boolean) => {
     setIsMusicBoxPlaying(isOpen);
-    // updateWindVolume useEffect tarafından tetiklenecek
   }, []);
 
   const handleOpenBook = () => {
@@ -126,18 +127,15 @@ const RoomScene = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      // Gece modunda arka plan rengini koyulaştır (Overlay yetmezse diye fallback)
     >
-      {/* --- GECE MODU / LIGHTING OVERLAY --- */}
-      {/* Bu div arkaplanın üzerindedir ancak interaktif itemlerin altındadır (z-index 10-15 arası) */}
+      {/* Gece Modu Katmanları */}
       <div 
         className="absolute inset-0 pointer-events-none transition-all duration-1000 z-0"
         style={{
             backgroundColor: isMoonLit ? 'rgba(10, 20, 60, 0.6)' : 'transparent',
-            mixBlendMode: 'multiply', // Resmi karartır ve mavi ton katar
+            mixBlendMode: 'multiply', 
         }}
       />
-      {/* İkinci bir katman: Hafif bir parlaklık efekti (Soft Light) */}
        <div 
         className="absolute inset-0 pointer-events-none transition-all duration-1000 z-10"
         style={{
@@ -152,19 +150,17 @@ const RoomScene = () => {
         </div>
       )}
 
-      {/* Arka Plan Resmi */}
+      {/* Arka Plan */}
       <img 
         src="/images/room-bg.png" 
         alt="Room Background" 
         className="absolute inset-0 w-full h-full object-fill -z-50 opacity-90 transition-all duration-1000"
         style={{
-            // Gece modunda resmi biraz grileştirip parlaklığını kısıyoruz.
-            // Bu sayede mavi overlay daha iyi görünüyor ve renkler patlamıyor.
             filter: isMoonLit ? 'brightness(0.6) grayscale(0.2)' : 'brightness(1) grayscale(0)'
         }}
       />
 
-      {/* --- YENİ: AY GARLANDI --- */}
+      {/* Garland (Işık Açma Kapama) */}
       <div className="absolute top-[16%] left-[19%] w-[70vw] max-w-[1300px] z-40 h-[100px]">
          <MoonGarland isLit={isMoonLit} onToggleMood={() => setIsMoonLit(!isMoonLit)} />
       </div>
@@ -179,13 +175,10 @@ const RoomScene = () => {
          <PlantGlitch />
       </motion.div>
 
-      {/* Radyo (z-index itemlerin üstünde olmalı, overlay'in de üstünde: z-20) */}
       <div className="absolute bottom-[44.2%] left-[52%] z-21 w-[3vw] max-w-[180px]">
          <RadioPlayer ref={radioRef} onPlayStateChange={handleRadioStateChange} />
       </div>
 
-      {/* --- YENİ: MÜZİK KUTUSU --- */}
-      {/* Konumlandırma: Masa üzerinde veya rafta. Şimdilik sağ alt tarafa kitapların yakınına koyuyorum */}
       <div className="absolute bottom-[44.2%] left-[18.3%] z-20 w-[4vw] max-w-[120px]">
          <MusicBox onStateChange={handleMusicBoxStateChange} />
       </div>
@@ -196,13 +189,14 @@ const RoomScene = () => {
 
       {isCakeUnlocked && (
         <motion.div 
-            initial={{ opacity: 0, scale: 1 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1, type: "spring" }}
             whileHover={{ scale: 1.1 }}
             className="absolute bottom-[21%] left-[40%] z-20 w-[12vw] max-w-[360px] cursor-pointer"
         >
             <InteractiveItem label="Doğum Günü" onClick={handleCakeClick} className="w-full h-full">
-                <img src="/images/items/cake.png" alt="Birthday Cake" className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]" />
+                <img src="/images/items/cake.png" alt="Birthday Cake" className="w-full h-auto object-contain drop-shadow-[0_0_25px_rgba(251,191,36,0.8)]" />
             </InteractiveItem>
         </motion.div>
       )}
@@ -222,9 +216,6 @@ const RoomScene = () => {
             <img src="/images/items/telescope.png" alt="Teleskop" className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300" />
           </InteractiveItem>
       </div>
-
-      {/* Eski Vignette Efekti (Hala durabilir, overlay ile karışır) */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_40%,#000000_100%)] z-30 opacity-50" />
 
       <BookQuotes isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} quote={currentQuote} />
 

@@ -7,20 +7,45 @@ import Confetti from 'react-confetti';
 import { Howl } from 'howler';
 import { useGame } from '@/context/GameContext'; 
 
-
 type Point = { id: number; x: number; y: number };
 type Connection = { from: number; to: number };
-
 type BgStar = { id: number; x: number; y: number; size: number; delay: number; duration: number; opacity: number };
 
 const ConstellationGame = () => {
   const { width, height } = useWindowSize();
-  const { changeScene, unlockCake } = useGame(); 
-  const [activePoints, setActivePoints] = useState<number[]>([]);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
   
+  // GÜNCELLEME: Context'ten yeni değerleri alıyoruz
+  const { changeScene, unlockCake, isConstellationSolved, solveConstellation, isCakeUnlocked } = useGame(); 
+
+  const points: Point[] = [
+    { id: 1, x: 48, y: 16.5 }, 
+    { id: 2, x: 48, y: 32 }, 
+    { id: 3, x: 30, y: 39.3 }, 
+    { id: 4, x: 67, y: 39.3 }, 
+    { id: 5, x: 42.7, y: 69.8 }, 
+    { id: 6, x: 54.5, y: 69.5 }, 
+  ];
+
+  // GÜNCELLEME: State başlatılırken Context'e bakıyor.
+  // Eğer daha önce çözüldüyse (isConstellationSolved true ise), bütün noktaları aktif başlatıyoruz.
+  const [activePoints, setActivePoints] = useState<number[]>(
+    isConstellationSolved ? points.map(p => p.id) : []
+  );
+
+  // Eğer context'te çözüldü ise completed state'i de true başlasın
+  const [isCompleted, setIsCompleted] = useState(isConstellationSolved);
+  
+  const [showConfetti, setShowConfetti] = useState(false);
   const [backgroundStars, setBackgroundStars] = useState<BgStar[]>([]);
+
+  const connections: Connection[] = [
+    { from: 1, to: 2 }, 
+    { from: 2, to: 3 }, 
+    { from: 2, to: 4 }, 
+    { from: 3, to: 5 }, 
+    { from: 4, to: 6 }, 
+    { from: 5, to: 6 }, 
+  ];
 
   const sounds = useMemo(() => {
     return {
@@ -33,7 +58,6 @@ const ConstellationGame = () => {
       }), 
     };
   }, []);
-
 
   useEffect(() => {
     const stars = Array.from({ length: 50 }).map((_, i) => ({
@@ -48,30 +72,13 @@ const ConstellationGame = () => {
     setBackgroundStars(stars);
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     sounds.intro.play();
   }, [sounds]);
 
-  const points: Point[] = [
-    { id: 1, x: 48, y: 16.5 }, 
-    { id: 2, x: 48, y: 32 }, 
-    { id: 3, x: 30, y: 39.3 }, 
-    { id: 4, x: 67, y: 39.3 }, 
-    { id: 5, x: 42.7, y: 69.8 }, 
-    { id: 6, x: 54.5, y: 69.5 }, 
-  ];
-
-  const connections: Connection[] = [
-    { from: 1, to: 2 }, 
-    { from: 2, to: 3 }, 
-    { from: 2, to: 4 }, 
-    { from: 3, to: 5 }, 
-    { from: 4, to: 6 }, 
-    { from: 5, to: 6 }, 
-  ];
-
   const handlePointClick = (id: number) => {
-    if (activePoints.includes(id)) return;
+    // Eğer zaten tamamlandıysa tıklamaya izin verme
+    if (activePoints.includes(id) || isCompleted) return;
 
     sounds.starClick.play();
     const newActive = [...activePoints, id];
@@ -82,6 +89,11 @@ const ConstellationGame = () => {
         setIsCompleted(true);
         setShowConfetti(true);
         sounds.success.play();
+        
+        // GÜNCELLEME: Oyun bittiği an Context'e kaydediyoruz.
+        // Böylece "Mührü Aç"a basmadan çıksa bile geri gelince tamamlanmış görecek.
+        solveConstellation(); 
+        
       }, 500);
     }
   };
@@ -100,6 +112,7 @@ const ConstellationGame = () => {
   return (
     <div className="relative flex items-center justify-center w-full h-full overflow-hidden">
         
+        {/* CSS ve Arka Plan Yıldızları (Değişiklik yok) */}
         <style jsx>{`
         @keyframes twinkle {
           0% { opacity: 0.7; transform: scale(1); }
@@ -129,13 +142,11 @@ const ConstellationGame = () => {
         }
         `}</style>
 
-
         <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
             {backgroundStars.map((star) => (
                 <div
                     key={`bg-star-${star.id}`}
                     className="star-bg"
-
                     style={{
                         left: `${star.x}%`,
                         top: `${star.y}%`,
@@ -143,7 +154,6 @@ const ConstellationGame = () => {
                         height: `${star.size}px`,
                         opacity: star.opacity,
                         boxShadow: `0 0 ${star.size + 2}px rgba(255, 255, 255, 0.4)`,
-
                         animationName: 'twinkle',
                         animationDuration: `${star.duration}s`,
                         animationIterationCount: 'infinite',
@@ -156,24 +166,16 @@ const ConstellationGame = () => {
 
       <div className="relative w-full h-full max-w-[500px] max-h-[750px] z-10">
       
-
+         {/* Mühür Görseli */}
          <div className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center opacity-80 z-0">
               <div className="w-full h-full -translate-x-[59px] -translate-y-[-15px]">
-             <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-                viewBox="0 -65 660 950" 
-             >
-                <image 
-                    width="800" 
-                    height="800" 
-                    xlinkHref={sealImageBase64} 
-                />
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -65 660 950">
+                <image width="800" height="800" xlinkHref={sealImageBase64} />
              </svg>
         </div>
     </div>
 
-
+        {/* Çizgiler */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
             {connections.map((conn, index) => {
             const p1 = points.find((p) => p.id === conn.from);
@@ -198,7 +200,7 @@ const ConstellationGame = () => {
             })}
         </svg>
 
-
+      {/* Noktalar (Butonlar) */}
       <div className="absolute inset-0 w-full h-full z-20 pointer-events-none">
         {points.map((point) => {
           const isActive = activePoints.includes(point.id);
@@ -206,7 +208,8 @@ const ConstellationGame = () => {
             <button
               key={point.id}
               onClick={() => handlePointClick(point.id)}
-              className="absolute w-10 h-10 flex items-center justify-center pointer-events-auto focus:outline-none bg-transparent border-none p-0 -translate-x-1/2 -translate-y-1/2"
+              // Eğer tamamlandıysa cursor default olsun
+              className={`absolute w-10 h-10 flex items-center justify-center pointer-events-auto focus:outline-none bg-transparent border-none p-0 -translate-x-1/2 -translate-y-1/2 ${isCompleted ? 'cursor-default' : 'cursor-pointer'}`}
               style={{ left: `${point.x}%`, top: `${point.y}%` }}
             >
                 <div 
@@ -218,9 +221,14 @@ const ConstellationGame = () => {
         })}
       </div>
       
-      
+      {/* 
+          GÜNCELLEME: Mührü Aç Butonu.
+          Buton SADECE cons tamamlandıysa (isCompleted) VE pasta henüz açılmadıysa (!isCakeUnlocked) görünür.
+          Eğer pasta zaten açıldıysa (yani daha önce butona basıldıysa) ama kullanıcı tekrar Sky ekranına geldiyse
+          cons tamamlanmış görünür ama buton tekrar çıkmaz.
+      */}
       <AnimatePresence>
-        {isCompleted && (
+        {isCompleted && !isCakeUnlocked && (
            <motion.div 
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}

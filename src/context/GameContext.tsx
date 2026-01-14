@@ -4,7 +4,6 @@ import React, { createContext, useContext, useState, useRef, useEffect, ReactNod
 import { Howl } from 'howler';
 
 type SoundType = 'bg-music' | 'wind' | 'glitch' | 'hoot' | 'click' | 'sparkle' | 'pop';
-
 type SceneType = 'intro' | 'room' | 'sky' | 'letter';
 
 interface GameContextType {
@@ -14,8 +13,14 @@ interface GameContextType {
   toggleAudio: (play?: boolean) => void;
   enterShelter: () => void;
   playSound: (type: SoundType) => void;
+  
+  // Pasta Durumu
   isCakeUnlocked: boolean;
   unlockCake: () => void;
+
+  // YENİ: Cons (Yıldız) Oyunu Durumu
+  isConstellationSolved: boolean;
+  solveConstellation: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -23,7 +28,10 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [currentScene, setCurrentScene] = useState<SceneType>('intro');
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  
   const [isCakeUnlocked, setIsCakeUnlocked] = useState(false);
+  // YENİ: Oyunun tamamlanıp tamamlanmadığını tutan state
+  const [isConstellationSolved, setIsConstellationSolved] = useState(false);
   
   const musicRef = useRef<Howl | null>(null);
   const sounds = useRef<Record<string, Howl>>({});
@@ -75,16 +83,18 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-
   const enterShelter = () => {
-
-    
     toggleAudio(true);
     changeScene('room');
   };
 
   const unlockCake = () => {
     setIsCakeUnlocked(true);
+  };
+
+  // YENİ: Fonksiyon
+  const solveConstellation = () => {
+    setIsConstellationSolved(true);
   };
 
   return (
@@ -96,7 +106,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       enterShelter,
       playSound,
       isCakeUnlocked, 
-      unlockCake
+      unlockCake,
+      // Yeni değerleri provider'a ekliyoruz
+      isConstellationSolved,
+      solveConstellation
     }}>
       {children}
     </GameContext.Provider>
