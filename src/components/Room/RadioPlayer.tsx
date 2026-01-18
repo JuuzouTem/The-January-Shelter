@@ -32,21 +32,18 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   const [currentSong, setCurrentSong] = useState<Song>(initialSong);
   const [playCount, setPlayCount] = useState(0);
   
-  // DEĞİŞİKLİK 1: Sadece o anki sesi değil, yüklenen tüm sesleri tutan bir havuz
-  const soundCacheRef = useRef<Record<string, Howl>>({});
-  const currentSoundRef = useRef<Howl | null>(null);
+  const soundRef = useRef<Howl | null>(null);
 
   useEffect(() => {
     globalLastTrackIndex = trackState;
   }, [trackState]);
 
-  // Sayfadan tamamen çıkılırsa (örn: sekmeyi kapatmak) temizlik yap
   useEffect(() => {
     return () => {
-      // Tüm önbelleğe alınmış şarkıları durdur ve temizle
-      Object.values(soundCacheRef.current).forEach(sound => {
-        sound.unload();
-      });
+      if (soundRef.current) {
+        soundRef.current.stop();
+        soundRef.current.unload();
+      }
     };
   }, []);
 
@@ -63,69 +60,58 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   }));
 
   const getThemeStyles = () => {
-    // ... (Mevcut tema kodların aynen kalıyor)
     if (trackState === -1) {
-        return {
-          bg: "rgba(20, 10, 40, 0.9)",
-          border: "rgba(236, 72, 153, 0.8)",
-          shadow: "0 0 30px rgba(59, 130, 246, 0.4)",
-          discGradient: "linear-gradient(135deg, #3b82f6, #ec4899)",
-          labelText: "WHO'S REALLY THERE?",
-          labelColor: "#ec4899",
-          songTitleColor: "#60a5fa",
-          iconColor: "#ffffff"
-        };
-      }
-      if (trackState === -2) {
-        return {
-          bg: "rgba(0, 0, 0, 0.95)",
-          border: "rgba(255, 255, 255, 0.9)",
-          shadow: "0 0 0px rgba(0,0,0,0)",
-          discGradient: "linear-gradient(135deg, #000000, #ffffff)",
-          labelText: "DANGEROUSLY YOURS",
-          labelColor: "#d1d5db",
-          songTitleColor: "#ffffff",
-          iconColor: "#ffffff"
-        };
-      }
       return {
-        bg: "rgba(0, 0, 0, 0.6)",
-        border: "rgba(255, 255, 255, 0.15)",
-        shadow: "0 4px 20px rgba(0,0,0,0.3)",
-        discGradient: "linear-gradient(135deg, #a855f7, #3b82f6)",
-        labelText: "NOW PLAYING",
-        labelColor: "#9ca3af",
+        bg: "rgba(20, 10, 40, 0.9)",
+        border: "rgba(236, 72, 153, 0.8)",
+        shadow: "0 0 30px rgba(59, 130, 246, 0.4)",
+        discGradient: "linear-gradient(135deg, #3b82f6, #ec4899)",
+        labelText: "WHO'S REALLY THERE?",
+        labelColor: "#ec4899",
+        songTitleColor: "#60a5fa",
+        iconColor: "#ffffff"
+      };
+    }
+    if (trackState === -2) {
+      return {
+        bg: "rgba(0, 0, 0, 0.95)",
+        border: "rgba(255, 255, 255, 0.9)",
+        shadow: "0 0 0px rgba(0,0,0,0)",
+        discGradient: "linear-gradient(135deg, #000000, #ffffff)",
+        labelText: "DANGEROUSLY YOURS",
+        labelColor: "#d1d5db",
         songTitleColor: "#ffffff",
         iconColor: "#ffffff"
       };
+    }
+    return {
+      bg: "rgba(0, 0, 0, 0.6)",
+      border: "rgba(255, 255, 255, 0.15)",
+      shadow: "0 4px 20px rgba(0,0,0,0.3)",
+      discGradient: "linear-gradient(135deg, #a855f7, #3b82f6)",
+      labelText: "NOW PLAYING",
+      labelColor: "#9ca3af",
+      songTitleColor: "#ffffff",
+      iconColor: "#ffffff"
+    };
   };
 
   const theme = getThemeStyles();
 
-  // DEĞİŞİKLİK 2: Play Sound Mantığı Yenilendi
   const playSound = (song: Song, index: number) => {
-    // 1. Şu an çalan varsa sadece durdur (UNLOAD YAPMA!)
-    if (currentSoundRef.current) {
-        currentSoundRef.current.stop();
+    if (soundRef.current) {
+        soundRef.current.stop();
+        soundRef.current.unload();
     }
     
-    // 2. Bu şarkı daha önce yüklendi mi havuza bak
-    let sound = soundCacheRef.current[song.src];
-
-    // 3. Eğer havuzda yoksa yeni yarat
-    if (!sound) {
-        sound = new Howl({
-            src: [song.src],
-            html5: true, // Streaming için açık kalabilir
-            volume: 0.5,
-            onend: () => handleNext()
-        });
-        // Havuza ekle
-        soundCacheRef.current[song.src] = sound;
-    }
-
-    // 4. Sesi oynat
-    currentSoundRef.current = sound;
+    const sound = new Howl({
+      src: [song.src],
+      html5: true,
+      volume: 0.5,
+      onend: () => handleNext()
+    });
+    
+    soundRef.current = sound;
     sound.play();
     
     setIsPlaying(true);
@@ -134,8 +120,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   };
 
   const togglePlay = () => {
-    if (!currentSoundRef.current) {
-      // Hiç müzik başlamamışsa ilkiyle başla
+    if (!soundRef.current) {
       let songToPlay = standardMusicList[0];
       
       if (trackState >= 0 && trackState < standardMusicList.length) {
@@ -148,19 +133,17 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
 
       playSound(songToPlay, trackState);
     } else {
-      // Zaten bir müzik seçiliyse
       if (isPlaying) {
-        currentSoundRef.current.pause();
+        soundRef.current.pause();
         setIsPlaying(false);
       } else {
-        currentSoundRef.current.play();
+        soundRef.current.play();
         setIsPlaying(true);
       }
     }
   };
 
   const handleNext = () => {
-    // Easter Egg mantığı aynen korunuyor
     if (trackState === -1) {
       playSound(easterEggSongs.main, -2);
       return;
