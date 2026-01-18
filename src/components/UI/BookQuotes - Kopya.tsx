@@ -18,7 +18,7 @@ const PAGES = [
     subtitle: "Sessiz Fısıltılar",
     color: '#D4C4FB',
     orientation: 'landscape',
-    content: "soon",
+    content: "- Merak ediyorum, başımı kaldırıp geceye baktığımızda gözlerimiz aynı ayı mı buluyor?\n- Eğer öyleyse, ona fısıldadıklarını görebilmeyi, sessizliğinde sakladıklarını duyabilmeyi dilerdim...",
     date: "7.01.26"
   },
   {
@@ -27,7 +27,7 @@ const PAGES = [
     subtitle: "You or Country",
     color: '#E8D5B5',
     orientation: 'portrait',
-    content: "soon",
+    content: "- If I betray you, I betray myself.\n- If I betray him, I betray my country.\n- My country is very dear to me.\n+ Dearer than I?\n- No...\n- No. Not dearer than you.",
     date: "3.01.26"
   },
   {
@@ -36,7 +36,7 @@ const PAGES = [
     subtitle: "Rüzgarın Taşıdıkları",
     color: '#FFABAB',
     orientation: 'landscape',
-    content: "soon",
+    content: "- Rüzgar her estiğinde, getirdiği uğultuya kulak veriyor musun?\n- Belki de kelimelere dökülemeyen, sana ulaşamayan o cümleleri taşıyordur kulaklarına...",
     date: "7.01.26"
   },
   {
@@ -45,7 +45,7 @@ const PAGES = [
     subtitle: "The One Cold Star",
     color: '#AED9E0',
     orientation: 'portrait',
-    content: "soon",
+    content: "- You must tell her the truth. Before it's...\n- Before it's too late!\n+ Tell her the truth?\n+ Tell her the.. truth so that she will watch the stars through tears?\n+ Instead of following the one cold star that is her destiny?\n+ No, no Elvear...\n+ Let her think, I never loved her...",
     date: "3.01.26"
   },
   {
@@ -54,7 +54,7 @@ const PAGES = [
     subtitle: "Parlayan Kuyruklu yıldız",
     color: '#B8E0D2',
     orientation: 'portrait',
-    content: "soon",
+    content: "- Oh Kevin, dediklerini duydun mu?\n- Gökyüzünde parıldayan bir kayan yıldızmışım onlar için.\n- Sence ben bir parıltı kadar mıyım?\n+ Bırak gökyüzü onların olsun.\n+ Karanlığa gömüldüğünde siyaha bakan ben olacağım, yetmez mi?",
     date: "8.01.26"
   },
   {
@@ -63,7 +63,7 @@ const PAGES = [
     subtitle: "Foolish Reason",
     color: '#FFF5BA',
     orientation: 'portrait',
-    content: "soon",
+    content: "- Once I told you \"I'd kissed a thousand women\" it was a lie.\n+ I know\n- I've only kissed two or three hundred.\n- Now, how many men have you kissed?\n+ Very few.\n- But you offered me a kiss, why?\n+ Such a foolish reason I'm afraid.\n+ I just.. wanted to kiss you.",
     date: "2.01.26"
   },
   {
@@ -72,7 +72,7 @@ const PAGES = [
     subtitle: "Anlamak",
     color: '#D7CCC8',
     orientation: 'landscape',
-    content: "soon",
+    content: "- Bir benle karşılaştım rüyamda.\n- Tek bir kelime etmedik.\n- Süzüp gitti sadece.\n- Yine de hissettim dediklerini.\n- Söylesene, anlamak için ille de konuşmak mı gerekli?",
     date: "8.01.26"
   },
   {
@@ -81,7 +81,7 @@ const PAGES = [
     subtitle: "Catherine",
     color: '#F3E5F5',
     orientation: 'portrait',
-    content: "soon",
+    content: "- You live a long time yet Catherine.\n- An eternity without me.\n- You will look into the faces of passers by hoping for something that will for an instant bring me back to you.\n- You will find moonlit night strangely empty because,\n- When you call my name through them there will be no answer.\n- Always your heart will be aching for me and,\n- Your mind will give you the doubtful consolation that you did a brave thing.",
     date: "3.01.26"
   },
   {
@@ -90,7 +90,7 @@ const PAGES = [
     subtitle: "An Accident",
     color: '#FFCCBC',
     orientation: 'portrait',
-    content: "soon",
+    content: "- You despicable fool!\n- You told me it was an accident.\n+ It was an accident, Yes.\n+ But... falling in love with you was the only real accident.\n- You used my trust!\n- Does that mean everything was a lie?\n+ I lied to the world, Catherine, but never to my heart.\n- How can I believe a spy?\n+ Dont believe the spy.\n+ Believe the man who is ready to die just to stay by your side.\n- We are from different worlds, Rudolph.\n+ Then let the worlds burn. I am dangerously yours, now and forever.",
     date: "4.01.26"
   }
 ];
