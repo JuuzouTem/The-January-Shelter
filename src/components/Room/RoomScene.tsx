@@ -7,7 +7,7 @@ import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import { useGame } from '@/context/GameContext';
 import { quotes } from '@/data/quotes';
-import Image from 'next/image'; // Bunu eklemeyi unutma
+import Image from 'next/image';
 
 import TeaCup from './TeaCup';
 import PlantGlitch from './PlantGlitch';
@@ -143,9 +143,9 @@ const RoomScene = () => {
          <Image 
             src="/images/room-bg.png" 
             alt="Room Background" 
-            fill // Next.js 13+ için 'layout=fill' yerine bu kullanılır
-            priority={true} // EN ÖNEMLİ KISIM: Hemen yüklenmesini sağlar
-            quality={100} // Kaliteyi düşürmesin
+            fill
+            priority={true}
+            quality={100}
             className="object-fill opacity-90 transition-all duration-1000"
             style={{
                 filter: isMoonLit ? 'brightness(0.6) grayscale(0.2)' : 'brightness(1) grayscale(0)'

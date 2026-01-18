@@ -1,6 +1,5 @@
 import { standardMusicList, easterEggSongs } from './musicList';
 
-// Yüklenecek Görseller
 export const imageAssets = [
   "/images/room-bg.png",
   "/images/items/music-box-open.png",
@@ -16,12 +15,8 @@ export const imageAssets = [
   "/images/paper-texture.jpg",
  "/images/polaroids/1.jpg",
  "/images/polaroids/2.jpg",
-  // Kar efekti veya ikonlar varsa onları da ekleyebilirsin
 ];
 
-// Yüklenecek Ses Efektleri (SFX)
-// Not: Şarkı listesindeki tüm şarkıları preload yapmıyoruz çünkü çok uzun sürer. 
-// Sadece efektleri ve kritik sesleri yüklüyoruz.
 export const audioAssets = [
   "/sounds/wind.mp3",
   "/sounds/cons.mp3",

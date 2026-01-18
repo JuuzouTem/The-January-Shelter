@@ -13,11 +13,9 @@ import { imageAssets, audioAssets } from '@/data/assets';
 export default function Home() {
   const { currentScene, enterShelter, changeScene } = useGame();
   
-  // LOADING STATE
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
-  // YÜKLEME MANTIĞI
   useEffect(() => {
     const totalAssets = imageAssets.length + audioAssets.length;
     let loadedCount = 0;
@@ -28,28 +26,25 @@ export default function Home() {
       setProgress(percentage);
 
       if (loadedCount >= totalAssets) {
-        // Her şey yüklendiğinde biraz bekleyip ekranı açıyoruz
         setTimeout(() => {
             setIsLoading(false);
         }, 800);
       }
     };
 
-    // Görselleri Yükle
     imageAssets.forEach((src) => {
       const img = new Image();
       img.src = src;
       img.onload = handleLoad;
-      img.onerror = handleLoad; // Hata olsa bile takılmasın diye sayıyoruz
+      img.onerror = handleLoad;
     });
 
-    // Sesleri Yükle (Howler ile cache'e alıyoruz)
     audioAssets.forEach((src) => {
       const sound = new Howl({
         src: [src],
         preload: true,
         onload: handleLoad,
-        onloaderror: handleLoad // Ses yüklenemezse de devam et
+        onloaderror: handleLoad
       });
     });
 
@@ -61,7 +56,6 @@ export default function Home() {
     changeScene('room');
   };
 
-  // Eğer yükleniyorsa bu ekranı göster
   if (isLoading) {
     return (
       <div className="w-screen h-screen bg-[#0a0f1e] flex flex-col items-center justify-center text-slate-300 font-serif z-[100]">
@@ -73,7 +67,6 @@ export default function Home() {
            HAZIRLANIYOR
         </motion.div>
         
-        {/* Progress Bar */}
         <div className="w-64 h-1 bg-slate-800 rounded-full overflow-hidden">
           <motion.div 
             className="h-full bg-purple-500/50"
@@ -86,7 +79,6 @@ export default function Home() {
     );
   }
 
-  // Yükleme bittiyse asıl siteyi render et
   return (
     <main className="relative w-full h-screen overflow-hidden bg-[#0a0f1e] font-sans text-slate-200 selection:bg-purple-500/30">
       
