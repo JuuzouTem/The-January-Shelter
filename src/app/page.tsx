@@ -148,7 +148,6 @@ export default function Home() {
 
       </AnimatePresence>
 
-
       <LetterModal 
         isOpen={isLetterOpen} 
         onClose={handleCloseLetter} 
