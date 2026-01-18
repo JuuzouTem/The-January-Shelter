@@ -1,16 +1,59 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import SnowFall from '@/components/Effects/SnowFall';
 import RoomScene from '@/components/Room/RoomScene';
 import SkyScene from '@/components/Sky/SkyScene';
 import LetterModal from '@/components/UI/LetterModal';
+import { Howl } from 'howler';
+import { imageAssets, audioAssets } from '@/data/assets';
 
 export default function Home() {
   const { currentScene, enterShelter, changeScene } = useGame();
+  
+  // LOADING STATE
+  const [isLoading, setIsLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
 
+  // YÜKLEME MANTIĞI
+  useEffect(() => {
+    const totalAssets = imageAssets.length + audioAssets.length;
+    let loadedCount = 0;
+
+    const handleLoad = () => {
+      loadedCount++;
+      const percentage = Math.round((loadedCount / totalAssets) * 100);
+      setProgress(percentage);
+
+      if (loadedCount >= totalAssets) {
+        // Her şey yüklendiğinde biraz bekleyip ekranı açıyoruz
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 800);
+      }
+    };
+
+    // Görselleri Yükle
+    imageAssets.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = handleLoad;
+      img.onerror = handleLoad; // Hata olsa bile takılmasın diye sayıyoruz
+    });
+
+    // Sesleri Yükle (Howler ile cache'e alıyoruz)
+    audioAssets.forEach((src) => {
+      const sound = new Howl({
+        src: [src],
+        preload: true,
+        onload: handleLoad,
+        onloaderror: handleLoad // Ses yüklenemezse de devam et
+      });
+    });
+
+  }, []);
 
   const isLetterOpen = currentScene === 'letter';
 
@@ -18,6 +61,32 @@ export default function Home() {
     changeScene('room');
   };
 
+  // Eğer yükleniyorsa bu ekranı göster
+  if (isLoading) {
+    return (
+      <div className="w-screen h-screen bg-[#0a0f1e] flex flex-col items-center justify-center text-slate-300 font-serif z-[100]">
+        <motion.div 
+           initial={{ opacity: 0 }} 
+           animate={{ opacity: 1 }} 
+           className="text-2xl mb-4 tracking-widest"
+        >
+           HAZIRLANIYOR
+        </motion.div>
+        
+        {/* Progress Bar */}
+        <div className="w-64 h-1 bg-slate-800 rounded-full overflow-hidden">
+          <motion.div 
+            className="h-full bg-purple-500/50"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="mt-2 text-xs opacity-50">%{progress}</div>
+      </div>
+    );
+  }
+
+  // Yükleme bittiyse asıl siteyi render et
   return (
     <main className="relative w-full h-screen overflow-hidden bg-[#0a0f1e] font-sans text-slate-200 selection:bg-purple-500/30">
       

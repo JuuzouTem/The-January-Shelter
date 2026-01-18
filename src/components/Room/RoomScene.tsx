@@ -7,6 +7,7 @@ import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import { useGame } from '@/context/GameContext';
 import { quotes } from '@/data/quotes';
+import Image from 'next/image'; // Bunu eklemeyi unutma
 
 import TeaCup from './TeaCup';
 import PlantGlitch from './PlantGlitch';
@@ -138,14 +139,19 @@ const RoomScene = () => {
         </div>
       )}
 
-      <img 
-        src="/images/room-bg.png" 
-        alt="Room Background" 
-        className="absolute inset-0 w-full h-full object-fill -z-50 opacity-90 transition-all duration-1000"
-        style={{
-            filter: isMoonLit ? 'brightness(0.6) grayscale(0.2)' : 'brightness(1) grayscale(0)'
-        }}
-      />
+      <div className="absolute inset-0 -z-50 w-full h-full">
+         <Image 
+            src="/images/room-bg.png" 
+            alt="Room Background" 
+            fill // Next.js 13+ için 'layout=fill' yerine bu kullanılır
+            priority={true} // EN ÖNEMLİ KISIM: Hemen yüklenmesini sağlar
+            quality={100} // Kaliteyi düşürmesin
+            className="object-fill opacity-90 transition-all duration-1000"
+            style={{
+                filter: isMoonLit ? 'brightness(0.6) grayscale(0.2)' : 'brightness(1) grayscale(0)'
+            }}
+         />
+      </div>
 
       <div className="absolute top-[16%] left-[19%] w-[70vw] max-w-[1300px] z-40 h-[100px]">
          <MoonGarland isLit={isMoonLit} onToggleMood={() => setIsMoonLit(!isMoonLit)} />
