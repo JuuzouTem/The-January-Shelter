@@ -6,7 +6,7 @@ export interface Song {
 }
 
 export const standardMusicList: Song[] = [
-  { id: 1, title: "Do I Wanna Know?", artist: "Arctic Monkeys", src: "/sounds/do-i-wanna-know.öp3" },
+  { id: 1, title: "Do I Wanna Know?", artist: "Arctic Monkeys", src: "/sounds/do-i-wanna-know.mp3" },
   { id: 2, title: "High", artist: "Arctic Monkeys", src: "/sounds/high.opus" },
   { id: 3, title: "No One Noticed", artist: "The Marías", src: "/sounds/no-one-noticed.opus" },
   { id: 4, title: "Like Him", artist: "Tyler, The Creator", src: "/sounds/like-him.opus" },

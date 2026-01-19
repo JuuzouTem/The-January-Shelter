@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Howl } from 'howler';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, SkipForward, SkipBack, Disc, Loader2 } from 'lucide-react'; // Loader ikonu eklendi
+import { Play, Pause, SkipForward, SkipBack, Disc } from 'lucide-react';
 import { standardMusicList, easterEggSongs, Song } from '@/data/musicList';
 import InteractiveItem from './InteractiveItem';
 
@@ -22,7 +22,6 @@ let globalLastTrackIndex = 0;
 
 const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlayStateChange }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isSongLoading, setIsSongLoading] = useState(false); // Yüklenme durumu eklendi
   
   const [trackState, setTrackState] = useState(globalLastTrackIndex); 
   
@@ -39,7 +38,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
     globalLastTrackIndex = trackState;
   }, [trackState]);
 
-  // Bileşen yok olduğunda sesi temizle
+  // Bileşen yok olduğunda (unmount) sesi temizle
   useEffect(() => {
     return () => {
       if (soundRef.current) {
@@ -101,45 +100,20 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   const theme = getThemeStyles();
 
   const playSound = (song: Song, index: number) => {
-    // Şarkı zaten yükleniyorsa tekrar basılmasını engelle (Spam Koruması)
-    if (isSongLoading && currentSong.id !== song.id) return;
-
-    setIsSongLoading(true); // Yükleme başladı
-
-    // Eski sesi durdur ve bellekten sil
+    // Eski sesi bellekten tamamen sil
     if (soundRef.current) {
         soundRef.current.stop();
         soundRef.current.unload();
     }
     
-    // YENİ AYAR: html5: false yapıyoruz.
-    // Bu, şarkıyı indirip RAM'e koyar. RAM'de olduğu için "geri/ileri" tuşları anlık çalışır.
-    // Her seferinde sadece 1 şarkı yüklendiği için RAM şişmez.
     const sound = new Howl({
       src: [song.src],
-      html5: false, // DEĞİŞİKLİK: Stabilite ve Hız için false yapıldı.
+      html5: true, // BU SATIR RAM KULLANIMINI DÜŞÜRÜR (Streaming)
       volume: 0.5,
-      preload: true,
-      onload: () => {
-        setIsSongLoading(false); // Yükleme bitti
-        if (!sound.playing()) {
-            sound.play();
-        }
-      },
-      onloaderror: () => {
-        setIsSongLoading(false); // Hata olursa loading'de takılmasın
-        console.error("Şarkı yüklenemedi:", song.title);
-      },
-      onplay: () => {
-        setIsPlaying(true);
-        setIsSongLoading(false);
-      },
       onend: () => handleNext()
     });
     
     soundRef.current = sound;
-    // sound.play() komutunu onload içine aldık ama Howler bazen otomatik başlatır.
-    // Yine de güvenli olsun diye burada da tetikleyebiliriz, Howler bunu yönetir.
     sound.play();
     
     setIsPlaying(true);
@@ -148,7 +122,6 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   };
 
   const togglePlay = () => {
-    // İlk açılış
     if (!soundRef.current) {
       let songToPlay = standardMusicList[0];
       
@@ -162,7 +135,6 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
 
       playSound(songToPlay, trackState);
     } else {
-      // Durdur / Başlat
       if (isPlaying) {
         soundRef.current.pause();
         setIsPlaying(false);
@@ -174,8 +146,6 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   };
 
   const handleNext = () => {
-    if (isSongLoading) return; // Yükleme sırasına geçişi engelle
-
     if (trackState === -1) {
       playSound(easterEggSongs.main, -2);
       return;
@@ -204,8 +174,6 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   };
 
   const handlePrev = () => {
-    if (isSongLoading) return; // Yükleme sırasında geçişi engelle
-
     let nextIndex = 0;
     if (trackState < 0) {
         nextIndex = standardMusicList.length - 1;
@@ -247,7 +215,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
       </InteractiveItem>
 
       <AnimatePresence>
-        {(isPlaying || isSongLoading) && (
+        {isPlaying && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ 
@@ -261,18 +229,13 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
             transition={{ duration: 0.5 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-[0.08vw] backdrop-blur-md border px-6 py-3 rounded-full z-[100]"
           >
-            {/* Albüm kapağı veya dönen disk */}
             <motion.div 
               animate={{ rotate: 360 }} 
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               className="rounded-full p-1"
               style={{ background: theme.discGradient }}
             >
-                {isSongLoading ? (
-                    <Loader2 size={24} className="text-white animate-spin" />
-                ) : (
-                    <Disc size={24} className="text-white mix-blend-overlay" />
-                )}
+                <Disc size={24} className="text-white mix-blend-overlay" />
             </motion.div>
 
             <div className="flex flex-col min-w-[7vw]">
@@ -280,7 +243,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
                 animate={{ color: theme.labelColor }}
                 className="text-xs font-medium tracking-wider"
               >
-                {isSongLoading ? "LOADING..." : theme.labelText}
+                {theme.labelText}
               </motion.span>
               
               <motion.span 
@@ -292,31 +255,13 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
             </div>
 
             <div className="flex items-center gap-2 border-l border-white/10 pl-4">
-              <button 
-                onClick={handlePrev} 
-                disabled={isSongLoading}
-                className="p-2 hover:bg-white/10 rounded-full text-white transition-colors disabled:opacity-50"
-              >
+              <button onClick={handlePrev} className="p-2 hover:bg-white/10 rounded-full text-white transition-colors">
                 <SkipBack size={18} />
               </button>
-              
-              <button 
-                onClick={togglePlay} 
-                disabled={isSongLoading}
-                className="p-2 bg-white text-black rounded-full hover:scale-105 transition-transform disabled:opacity-50 disabled:scale-100"
-              >
-                {isSongLoading ? (
-                    <Loader2 size={18} className="animate-spin text-black" />
-                ) : (
-                    isPlaying ? <Pause size={18} fill="black" /> : <Play size={18} fill="black" />
-                )}
+              <button onClick={togglePlay} className="p-2 bg-white text-black rounded-full hover:scale-105 transition-transform">
+                {isPlaying ? <Pause size={18} fill="black" /> : <Play size={18} fill="black" />}
               </button>
-
-              <button 
-                onClick={handleNext} 
-                disabled={isSongLoading}
-                className="p-2 hover:bg-white/10 rounded-full text-white transition-colors disabled:opacity-50"
-              >
+              <button onClick={handleNext} className="p-2 hover:bg-white/10 rounded-full text-white transition-colors">
                 <SkipForward size={18} />
               </button>
             </div>
