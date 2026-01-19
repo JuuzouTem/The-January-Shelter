@@ -17,13 +17,10 @@ export default function SnowFall() {
     canvas.width = W;
     canvas.height = H;
 
-
     const maxParticles = 150;
-    
-
     const particles: any[] = [];
 
-
+    // Partikülleri başlat
     for (let i = 0; i < maxParticles; i++) {
       particles.push({
         x: Math.random() * W,
@@ -40,21 +37,18 @@ export default function SnowFall() {
     function draw() {
       if (!ctx || !canvas) return;
 
-
       ctx.clearRect(0, 0, W, H);
-
-
-      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-      ctx.beginPath();
       
+      // Optimizasyon: Her seferinde fillStyle atamak yerine gruplanabilir 
+      // ama alpha (saydamlık) farklı olduğu için döngü içinde kalmalı.
+      // Ancak beginPath'i akıllıca kullanmak performansı artırır.
+
       for (let i = 0; i < maxParticles; i++) {
         const p = particles[i];
         
-        ctx.moveTo(p.x, p.y);
-
         ctx.fillStyle = `rgba(255, 255, 255, ${p.a})`; 
-
         ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
         ctx.fill();
       }
@@ -70,20 +64,26 @@ export default function SnowFall() {
       for (let i = 0; i < maxParticles; i++) {
         const p = particles[i];
 
-
+        // OPTİMİZASYON: Burada yeni bir obje ({...}) oluşturmak yerine
+        // mevcut objenin (p) özelliklerini değiştiriyoruz. 
+        // Bu Garbage Collection yükünü ve RAM şişmesini önler.
+        
         p.y += Math.cos(angle + p.d) + 1 + p.r / 2;
         p.x += Math.sin(angle) * 2;
 
-
         if (p.x > W + 5 || p.x < -5 || p.y > H) {
           if (i % 3 > 0) {
-            particles[i] = { x: Math.random() * W, y: -10, r: p.r, d: p.d, a: p.a };
+            // Ekrana yukarıdan tekrar gir
+            p.x = Math.random() * W;
+            p.y = -10;
           } else {
-
+            // Yanlardan gir
             if (Math.sin(angle) > 0) {
-              particles[i] = { x: -5, y: Math.random() * H, r: p.r, d: p.d, a: p.a };
+              p.x = -5;
+              p.y = Math.random() * H;
             } else {
-              particles[i] = { x: W + 5, y: Math.random() * H, r: p.r, d: p.d, a: p.a };
+              p.x = W + 5;
+              p.y = Math.random() * H;
             }
           }
         }
@@ -100,16 +100,13 @@ export default function SnowFall() {
 
     window.addEventListener('resize', handleResize);
     
-
     draw();
-
 
     return () => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
-
 
   return (
     <canvas 

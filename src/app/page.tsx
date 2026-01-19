@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import SnowFall from '@/components/Effects/SnowFall';
@@ -8,7 +8,7 @@ import RoomScene from '@/components/Room/RoomScene';
 import SkyScene from '@/components/Sky/SkyScene';
 import LetterModal from '@/components/UI/LetterModal';
 import { Howl } from 'howler';
-import { imageAssets, audioAssets } from '@/data/assets';
+import { imageAssets, sfxAssets } from '@/data/assets'; // sfxAssets import edildi
 
 export default function Home() {
   const { currentScene, enterShelter, changeScene } = useGame();
@@ -16,8 +16,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
+  const preloadedImages = useRef<HTMLImageElement[]>([]);
+
   useEffect(() => {
-    const totalAssets = imageAssets.length + audioAssets.length;
+    // Toplam varlık sayısı (Resimler + Sadece Efektler)
+    const totalAssets = imageAssets.length + sfxAssets.length;
     let loadedCount = 0;
 
     const handleLoad = () => {
@@ -28,22 +31,26 @@ export default function Home() {
         setProgress(realPercentage > 28 ? 28 : realPercentage);
       } else {
         setProgress(100);
-
         setTimeout(() => {
             setIsLoading(false);
         }, 800);
       }
     };
 
+    preloadedImages.current = [];
+
+    // Görselleri yükle ve referansta tut
     imageAssets.forEach((src) => {
       const img = new Image();
-      img.src = src;
+      preloadedImages.current.push(img);
       img.onload = handleLoad;
       img.onerror = handleLoad;
+      img.src = src;
     });
 
-    audioAssets.forEach((src) => {
-      const sound = new Howl({
+    // Sadece SFX seslerini yükle (RAM dostu)
+    sfxAssets.forEach((src) => {
+      new Howl({
         src: [src],
         preload: true,
         onload: handleLoad,
@@ -64,11 +71,7 @@ export default function Home() {
       <div className="w-screen h-screen bg-[#0a0f1e] flex flex-col items-center justify-center text-slate-300 font-serif z-[100]">
         <motion.div 
            animate={{ opacity: [1, 0.3, 1] }} 
-           transition={{ 
-             duration: 4,
-             repeat: Infinity,
-             ease: "easeInOut"
-           }}
+           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
            className="text-2xl mb-4 tracking-widest"
         >
            HAZIRLANIYOR

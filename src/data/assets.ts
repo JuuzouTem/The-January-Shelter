@@ -17,7 +17,7 @@ export const imageAssets = [
  "/images/polaroids/2.jpg",
 ];
 
-export const audioAssets = [
+export const sfxAssets = [
   "/sounds/wind.mp3",
   "/sounds/cons.mp3",
   "/sounds/cons_sound.mp3",
@@ -26,16 +26,6 @@ export const audioAssets = [
   "/sounds/yey.mp3", 
   "/sounds/music-box.mp3",
   "/sounds/undertale.mp3",
-  "/sounds/do-i-wanna-know.mp3",
-  "/sounds/no-one-noticed.mp3",
-  "/sounds/like-him.mp3",
-  "/sounds/love-game.mp3",
-  "/sounds/telephone.mp3",
-  "/sounds/stereo-love.mp3",
-  "/sounds/furina-demo.mp3",
-  "/sounds/furina-theme.mp3",
-  "/sounds/home.mp3",
-  "/sounds/voice.mp3",
+  "/sounds/do-i-wanna-know.opus",
   "/sounds/masquerade.mp3",
-  "/sounds/cigarettes-out-window.mp3",
 ];

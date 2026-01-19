@@ -38,6 +38,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
     globalLastTrackIndex = trackState;
   }, [trackState]);
 
+  // Bileşen yok olduğunda (unmount) sesi temizle
   useEffect(() => {
     return () => {
       if (soundRef.current) {
@@ -99,6 +100,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   const theme = getThemeStyles();
 
   const playSound = (song: Song, index: number) => {
+    // Eski sesi bellekten tamamen sil
     if (soundRef.current) {
         soundRef.current.stop();
         soundRef.current.unload();
@@ -106,7 +108,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
     
     const sound = new Howl({
       src: [song.src],
-      html5: true,
+      html5: true, // BU SATIR RAM KULLANIMINI DÜŞÜRÜR (Streaming)
       volume: 0.5,
       onend: () => handleNext()
     });
