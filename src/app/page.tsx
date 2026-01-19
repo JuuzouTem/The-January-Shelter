@@ -22,10 +22,13 @@ export default function Home() {
 
     const handleLoad = () => {
       loadedCount++;
-      const percentage = Math.round((loadedCount / totalAssets) * 100);
-      setProgress(percentage);
+      const realPercentage = Math.round((loadedCount / totalAssets) * 100);
 
-      if (loadedCount >= totalAssets) {
+      if (realPercentage < 100) {
+        setProgress(realPercentage > 28 ? 28 : realPercentage);
+      } else {
+        setProgress(100);
+
         setTimeout(() => {
             setIsLoading(false);
         }, 800);
@@ -60,8 +63,12 @@ export default function Home() {
     return (
       <div className="w-screen h-screen bg-[#0a0f1e] flex flex-col items-center justify-center text-slate-300 font-serif z-[100]">
         <motion.div 
-           initial={{ opacity: 0 }} 
-           animate={{ opacity: 1 }} 
+           animate={{ opacity: [1, 0.3, 1] }} 
+           transition={{ 
+             duration: 4,
+             repeat: Infinity,
+             ease: "easeInOut"
+           }}
            className="text-2xl mb-4 tracking-widest"
         >
            HAZIRLANIYOR
@@ -72,6 +79,7 @@ export default function Home() {
             className="h-full bg-purple-500/50"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
+            transition={{ type: "spring", stiffness: 50 }}
           />
         </div>
         <div className="mt-2 text-xs opacity-50">%{progress}</div>

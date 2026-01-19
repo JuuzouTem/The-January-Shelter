@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -9,7 +9,6 @@ interface EmptyBookProps {
   onClose: () => void;
   quote: string;
 }
-
 
 const PAGES = [
   {
@@ -97,26 +96,84 @@ const PAGES = [
 
 const TOTAL_PAGES = PAGES.length + 1;
 
+let SAVED_POSITION = { x: 0, y: 0 };
+let SAVED_PAGE_INDEX = 0; 
+
 const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
-  const [flippedIndex, setFlippedIndex] = useState(0);
+  const [flippedIndex, setFlippedIndex] = useState(0); 
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  
+  const isDraggingRef = useRef(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (SAVED_PAGE_INDEX > 0) {
+        let current = 0;
+        const interval = setInterval(() => {
+          current++;
+          setFlippedIndex(current);
+          if (current >= SAVED_PAGE_INDEX) {
+            clearInterval(interval);
+          }
+        }, 200); 
+        return () => clearInterval(interval);
+      }
+    }
+  }, [isOpen]);
+
+  const handleCloseSequence = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    
+    if (flippedIndex === 0) {
+      onClose();
+      return;
+    }
+    setIsClosing(true);
+  };
+
+  useEffect(() => {
+    if (isClosing) {
+      const interval = setInterval(() => {
+        setFlippedIndex((prev) => {
+          if (prev <= 0) {
+            clearInterval(interval);
+            setTimeout(() => {
+                onClose();
+                setIsClosing(false); 
+            }, 600); 
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 200); 
+
+      return () => clearInterval(interval);
+    }
+  }, [isClosing, onClose]);
+
 
   const handleNext = () => {
-    if (activeItemIndex !== null) return;
+    if (activeItemIndex !== null || isClosing) return;
     if (flippedIndex < TOTAL_PAGES) {
-      setFlippedIndex((prev) => prev + 1);
+      const nextIndex = flippedIndex + 1;
+      setFlippedIndex(nextIndex);
+      SAVED_PAGE_INDEX = nextIndex; 
     }
   };
 
   const handlePrev = () => {
-    if (activeItemIndex !== null) return;
+    if (activeItemIndex !== null || isClosing) return;
     if (flippedIndex > 0) {
-      setFlippedIndex((prev) => prev - 1);
+      const prevIndex = flippedIndex - 1;
+      setFlippedIndex(prevIndex);
+      SAVED_PAGE_INDEX = prevIndex; 
     }
   };
 
   const handleItemClick = (e: React.MouseEvent, index: number) => {
     e.stopPropagation();
+    if (isDraggingRef.current || isClosing) return;
     setActiveItemIndex(index);
   };
 
@@ -124,7 +181,6 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
     e?.stopPropagation();
     setActiveItemIndex(null);
   };
-
 
   const activePageData = activeItemIndex !== null ? PAGES[activeItemIndex - 1] : null;
 
@@ -135,14 +191,17 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={(e) => {
+            if (activeItemIndex !== null) return; 
+            handleCloseSequence(e);
+          }}
         >
           
-
           <AnimatePresence>
             {activeItemIndex !== null && activePageData && (
               <motion.div 
-                className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-auto p-4"
+                className="fixed inset-0 w-screen h-screen z-[200] flex items-center justify-center pointer-events-auto p-4"
                 initial={{ backgroundColor: 'rgba(0,0,0,0)' }}
                 animate={{ backgroundColor: '#00000000' }}
                 exit={{ backgroundColor: 'rgba(0,0,0,0)' }}
@@ -152,31 +211,18 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                   drag
                   dragMomentum={false}
                   whileDrag={{ scale: 1.05, cursor: 'grabbing', rotate: 2 }}
-                  className="relative shadow-2xl rounded-sm flex flex-col items-center cursor-grab overflow-hidden"
+                  className="relative shadow-2xl rounded-sm flex flex-col items-center cursor-grab overflow-hidden m-auto"
                   style={{ 
-
-                    width: activePageData.orientation === 'portrait' 
-                           ? 'min(90vw, 400px)' 
-                           : 'min(90vw, 600px)',
-                    height: activePageData.orientation === 'portrait' 
-                            ? 'min(80vh, 600px)' 
-                            : 'min(80vh, 400px)',
+                    width: activePageData.orientation === 'portrait' ? 'min(90vw, 400px)' : 'min(90vw, 600px)',
+                    height: activePageData.orientation === 'portrait' ? 'min(80vh, 600px)' : 'min(80vh, 400px)',
                     backgroundColor: activePageData.color,
                     backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.1%22/%3E%3C/svg%3E")',
                   }}
                   initial={{ scale: 0.2, opacity: 0, y: 100 }}
-                  animate={{ 
-                    scale: 1, 
-                    opacity: 1,
-                    y: 0,
-                    rotate: activePageData.orientation === 'landscape' ? 0 : 0, 
-                    zIndex: 201
-                  }}
+                  animate={{ scale: 1, opacity: 1, y: 0, rotate: 0, zIndex: 201 }}
                   exit={{ scale: 0.2, opacity: 0, transition: { duration: 0.2 } }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
                   onClick={(e) => e.stopPropagation()}
                 >
-
                     <button
                         onClick={closeActiveItem}
                         onPointerDown={(e) => e.stopPropagation()}
@@ -185,9 +231,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                         <X size={18} strokeWidth={2.5} />
                     </button>
 
-
                     <div className="w-full h-full flex flex-col relative">
-
                        <div className="flex-1 w-full overflow-hidden flex items-center px-10 py-12">
                            <p 
                               className="w-full font-serif leading-relaxed text-left whitespace-pre-wrap select-none"
@@ -214,22 +258,37 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
             )}
           </AnimatePresence>
 
-
-
           <motion.div
-            drag={activeItemIndex === null}
+            drag={activeItemIndex === null && !isClosing}
             dragMomentum={false}
             whileDrag={{ cursor: 'grabbing', scale: 1.02 }}
-            initial={{ scale: 0.8, y: 100 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.5, opacity: 0 }}
-            className={`relative ${activeItemIndex === null ? 'cursor-grab' : ''}`}
+            
+            onDragEnd={(event, info) => {
+                if (isClosing) return; 
+
+                SAVED_POSITION = {
+                    x: SAVED_POSITION.x + info.offset.x,
+                    y: SAVED_POSITION.y + info.offset.y
+                };
+                setTimeout(() => { isDraggingRef.current = false; }, 200);
+            }}
+            onDragStart={() => { 
+                if (isClosing) return;
+                isDraggingRef.current = true; 
+            }}
+
+            initial={{ scale: 0.8, x: SAVED_POSITION.x, y: SAVED_POSITION.y }}
+            animate={{ scale: 1, x: SAVED_POSITION.x, y: SAVED_POSITION.y }}
+            exit={{ scale: 0.5, opacity: 0, x: SAVED_POSITION.x, y: SAVED_POSITION.y }}
+
+            className={`relative m-auto ${activeItemIndex === null && !isClosing ? 'cursor-grab' : 'cursor-default'}`}
             style={{ perspective: '1500px' }}
+            onClick={(e) => e.stopPropagation()} 
           >
             
             {activeItemIndex === null && (
                 <button 
-                onClick={onClose} 
+                onClick={handleCloseSequence} 
                 className="absolute -top-12 right-0 z-50 bg-white/20 hover:bg-red-500/80 text-white rounded-full p-2 transition-all duration-300 backdrop-blur-md"
                 >
                 <X size={18} />
@@ -251,17 +310,10 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                 const isFlipped = index < flippedIndex;
                 const isCover = index === 0;
                 
-
                 const pageData = !isCover ? PAGES[index - 1] : null;
-
                 const leftPageData = index < PAGES.length ? PAGES[index] : null;
 
-                let zIndex = 0;
-                if (isFlipped) {
-                  zIndex = index;
-                } else {
-                  zIndex = TOTAL_PAGES - index;
-                }
+                const targetZIndex = isFlipped ? index : TOTAL_PAGES - index;
 
                 return (
                   <motion.div
@@ -269,7 +321,6 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                     className="absolute right-0 top-0 w-[300px] h-full origin-left rounded-r-lg shadow-md cursor-pointer"
                     style={{
                       WebkitTapHighlightColor: 'transparent',
-                      zIndex: zIndex,
                       transformStyle: 'preserve-3d',
                       backgroundColor: isCover ? '#5d4037' : '#fdf6e3',
                       backgroundImage: "url('/images/paper-texture.jpg')",
@@ -277,15 +328,22 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                       backgroundSize: 'cover',
                       borderLeft: isCover ? '4px solid #3e2723' : '1px solid rgba(0,0,0,0.1)'
                     }}
+                    
                     animate={{ 
-                      rotateY: isFlipped ? -180 : 0 
+                      rotateY: isFlipped ? -180 : 0,
+                      zIndex: targetZIndex
                     }}
+
                     transition={{ 
-                      duration: 0.8, 
-                      ease: "easeInOut" 
+                      duration: 0.6, 
+                      ease: "easeInOut",
+                      zIndex: { delay: 0.3 } 
                     }}
+
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (isDraggingRef.current || isClosing) return;
+
                       if (isFlipped) {
                         if (index === flippedIndex - 1) handlePrev();
                       } else {
@@ -319,9 +377,7 @@ const EmptyBook = ({ isOpen, onClose, quote }: EmptyBookProps) => {
                             }}
                             onClick={(e) => handleItemClick(e, index)}
                           >
-
                              <div className="absolute top-0 left-0 w-full h-full pointer-events-none" />
-                             
                              <div className="w-full h-full flex items-center justify-center opacity-30">
                                 <span className="text-white text-4xl font-serif" style={{ fontFamily: '"Dancing Script", cursive' }}>
                                     {pageData.id}
