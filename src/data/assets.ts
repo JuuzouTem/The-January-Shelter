@@ -27,5 +27,5 @@ export const sfxAssets = [
   "/sounds/music-box.mp3",
   "/sounds/undertale.mp3",
   "/sounds/do-i-wanna-know.mp3",
-  "/sounds/masquerade.mp3",
+  "/sounds/masquerade.opus",
 ];

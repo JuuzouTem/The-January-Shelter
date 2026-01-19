@@ -31,6 +31,6 @@ export const easterEggSongs = {
     id: 999, 
     title: "The Masquerade", 
     artist: "Dangerously Yours", 
-    src: "/sounds/masquerade.mp3" 
+    src: "/sounds/masquerade.opus" 
   }
 };
