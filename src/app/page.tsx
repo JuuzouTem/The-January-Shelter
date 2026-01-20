@@ -19,9 +19,7 @@ export default function Home() {
 
   const preloadedImages = useRef<HTMLImageElement[]>([]);
 
-  // 1. AŞAMA: Siteyi açmak için gereken hafif yükleme
   useEffect(() => {
-    // Toplam: Resimler + Hafif Efektler (baseSfx)
     const totalAssets = imageAssets.length + baseSfx.length;
     let loadedCount = 0;
 
@@ -30,23 +28,17 @@ export default function Home() {
       const realPercentage = Math.round((loadedCount / totalAssets) * 100);
       const safeReal = realPercentage > 100 ? 100 : realPercentage;
 
-      // --- EASTER EGG MANTIĞI ---
-      // 28 Ocak doğum günü şakası:
-      // Eğer yükleme %100 bitmediyse ama %28'i geçtiyse, ekranda %28 olarak sabit tut.
       if (safeReal < 100) {
         setProgress(safeReal >= 28 ? 28 : safeReal);
       } else {
-        // Yükleme %100 bittiğinde bir anda 100 yap.
         setProgress(100);
         
-        // Biraz bekletip sahneyi aç
         setTimeout(() => {
             setIsLoading(false);
         }, 800);
       }
     };
 
-    // Resim Yükleyici
     const loadImage = async (src: string) => {
         const img = new Image();
         img.onload = updateProgress;
@@ -70,7 +62,6 @@ export default function Home() {
 
     imageAssets.forEach((src) => loadImage(src));
 
-    // Hafif Sesleri Yükle (baseSfx kullanıyoruz)
     baseSfx.forEach((src) => {
       new Howl({
         src: [src],
@@ -82,11 +73,9 @@ export default function Home() {
 
   }, []);
 
-  // 2. AŞAMA: SİTE AÇILDIKTAN SONRA MÜZİKLERİ İNDİRME
   useEffect(() => {
     if (!isLoading) {
         const downloadMusic = async () => {
-            // musicTracks listesini sırayla indiriyoruz
             for (const musicSrc of musicTracks) {
                 await new Promise(r => setTimeout(r, 500));
                 await downloadToCache(musicSrc);

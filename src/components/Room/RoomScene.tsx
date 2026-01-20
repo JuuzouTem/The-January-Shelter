@@ -74,7 +74,7 @@ const RoomScene = () => {
     const sound = new Howl({
       src: ['/sounds/wind.mp3'],
       loop: true,
-      volume: 0.05,
+      volume: 0.1,
       autoplay: false,
       html5: true
     });
@@ -104,7 +104,7 @@ const RoomScene = () => {
   };
 
   const handleCakeClick = () => {
-     const yaySound = new Howl({ src: ['/sounds/yey.mp3'], volume: 0.5 });
+     const yaySound = new Howl({ src: ['/sounds/yey.mp3'], volume: 0.3 });
      yaySound.play();
      setShowConfetti(true);
      setTimeout(() => { setIsBirthdayModalOpen(true); }, 500);

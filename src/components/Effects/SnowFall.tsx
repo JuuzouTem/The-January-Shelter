@@ -20,7 +20,6 @@ export default function SnowFall() {
     const maxParticles = 150;
     const particles: any[] = [];
 
-    // Partikülleri başlat
     for (let i = 0; i < maxParticles; i++) {
       particles.push({
         x: Math.random() * W,
@@ -39,9 +38,6 @@ export default function SnowFall() {
 
       ctx.clearRect(0, 0, W, H);
       
-      // Optimizasyon: Her seferinde fillStyle atamak yerine gruplanabilir 
-      // ama alpha (saydamlık) farklı olduğu için döngü içinde kalmalı.
-      // Ancak beginPath'i akıllıca kullanmak performansı artırır.
 
       for (let i = 0; i < maxParticles; i++) {
         const p = particles[i];
@@ -64,20 +60,15 @@ export default function SnowFall() {
       for (let i = 0; i < maxParticles; i++) {
         const p = particles[i];
 
-        // OPTİMİZASYON: Burada yeni bir obje ({...}) oluşturmak yerine
-        // mevcut objenin (p) özelliklerini değiştiriyoruz. 
-        // Bu Garbage Collection yükünü ve RAM şişmesini önler.
         
         p.y += Math.cos(angle + p.d) + 1 + p.r / 2;
         p.x += Math.sin(angle) * 2;
 
         if (p.x > W + 5 || p.x < -5 || p.y > H) {
           if (i % 3 > 0) {
-            // Ekrana yukarıdan tekrar gir
             p.x = Math.random() * W;
             p.y = -10;
           } else {
-            // Yanlardan gir
             if (Math.sin(angle) > 0) {
               p.x = -5;
               p.y = Math.random() * H;
