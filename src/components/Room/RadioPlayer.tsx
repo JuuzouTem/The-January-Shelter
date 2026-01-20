@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Disc } from 'lucide-react';
 import { standardMusicList, easterEggSongs, Song } from '@/data/musicList';
 import InteractiveItem from './InteractiveItem';
+import { getAudioSource } from '@/utils/audioManager';
 
 interface RadioPlayerProps {
   onPlayStateChange?: (isPlaying: boolean) => void;
@@ -32,18 +33,21 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   const [currentSong, setCurrentSong] = useState<Song>(initialSong);
   const [playCount, setPlayCount] = useState(0);
   
+  const currentBlobUrl = useRef<string | null>(null);
   const soundRef = useRef<Howl | null>(null);
 
   useEffect(() => {
     globalLastTrackIndex = trackState;
   }, [trackState]);
 
-  // Bileşen yok olduğunda (unmount) sesi temizle
   useEffect(() => {
     return () => {
       if (soundRef.current) {
         soundRef.current.stop();
         soundRef.current.unload();
+      }
+      if (currentBlobUrl.current) {
+        URL.revokeObjectURL(currentBlobUrl.current);
       }
     };
   }, []);
@@ -99,18 +103,33 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
 
   const theme = getThemeStyles();
 
-  const playSound = (song: Song, index: number) => {
-    // Eski sesi bellekten tamamen sil
+  const playSound = async (song: Song, index: number) => {
     if (soundRef.current) {
         soundRef.current.stop();
         soundRef.current.unload();
     }
+    if (currentBlobUrl.current) {
+        URL.revokeObjectURL(currentBlobUrl.current);
+        currentBlobUrl.current = null;
+    }
+
+    const source = await getAudioSource(song.src);
     
+    if (source.isBlob) {
+        currentBlobUrl.current = source.url;
+    }
+
+    const extension = song.src.split('.').pop()?.toLowerCase() || 'mp3';
+
     const sound = new Howl({
-      src: [song.src],
-      html5: true, // BU SATIR RAM KULLANIMINI DÜŞÜRÜR (Streaming)
+      src: [source.url],
+      format: [extension],
+      html5: true,
       volume: 0.5,
-      onend: () => handleNext()
+      onend: () => handleNext(),
+      onloaderror: (id, error) => {
+         console.error("Müzik yükleme hatası:", error, song.src);
+      }
     });
     
     soundRef.current = sound;

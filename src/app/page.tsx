@@ -8,7 +8,8 @@ import RoomScene from '@/components/Room/RoomScene';
 import SkyScene from '@/components/Sky/SkyScene';
 import LetterModal from '@/components/UI/LetterModal';
 import { Howl } from 'howler';
-import { imageAssets, sfxAssets } from '@/data/assets'; // sfxAssets import edildi
+import { imageAssets, baseSfx, musicTracks } from '@/data/assets';
+import { downloadToCache } from '@/utils/audioManager';
 
 export default function Home() {
   const { currentScene, enterShelter, changeScene } = useGame();
@@ -18,47 +19,82 @@ export default function Home() {
 
   const preloadedImages = useRef<HTMLImageElement[]>([]);
 
+  // 1. AŞAMA: Siteyi açmak için gereken hafif yükleme
   useEffect(() => {
-    // Toplam varlık sayısı (Resimler + Sadece Efektler)
-    const totalAssets = imageAssets.length + sfxAssets.length;
+    // Toplam: Resimler + Hafif Efektler (baseSfx)
+    const totalAssets = imageAssets.length + baseSfx.length;
     let loadedCount = 0;
 
-    const handleLoad = () => {
+    const updateProgress = () => {
       loadedCount++;
       const realPercentage = Math.round((loadedCount / totalAssets) * 100);
+      const safeReal = realPercentage > 100 ? 100 : realPercentage;
 
-      if (realPercentage < 100) {
-        setProgress(realPercentage > 28 ? 28 : realPercentage);
+      // --- EASTER EGG MANTIĞI ---
+      // 28 Ocak doğum günü şakası:
+      // Eğer yükleme %100 bitmediyse ama %28'i geçtiyse, ekranda %28 olarak sabit tut.
+      if (safeReal < 100) {
+        setProgress(safeReal >= 28 ? 28 : safeReal);
       } else {
+        // Yükleme %100 bittiğinde bir anda 100 yap.
         setProgress(100);
+        
+        // Biraz bekletip sahneyi aç
         setTimeout(() => {
             setIsLoading(false);
         }, 800);
       }
     };
 
-    preloadedImages.current = [];
+    // Resim Yükleyici
+    const loadImage = async (src: string) => {
+        const img = new Image();
+        img.onload = updateProgress;
+        img.onerror = updateProgress;
+        
+        try {
+            const cache = await caches.open('january-shelter-images-v1');
+            const cachedRes = await cache.match(src);
+            if (cachedRes) {
+                const blob = await cachedRes.blob();
+                img.src = URL.createObjectURL(blob);
+            } else {
+                img.src = src;
+                cache.add(src).catch(() => {});
+            }
+        } catch {
+            img.src = src;
+        }
+        preloadedImages.current.push(img);
+    };
 
-    // Görselleri yükle ve referansta tut
-    imageAssets.forEach((src) => {
-      const img = new Image();
-      preloadedImages.current.push(img);
-      img.onload = handleLoad;
-      img.onerror = handleLoad;
-      img.src = src;
-    });
+    imageAssets.forEach((src) => loadImage(src));
 
-    // Sadece SFX seslerini yükle (RAM dostu)
-    sfxAssets.forEach((src) => {
+    // Hafif Sesleri Yükle (baseSfx kullanıyoruz)
+    baseSfx.forEach((src) => {
       new Howl({
         src: [src],
         preload: true,
-        onload: handleLoad,
-        onloaderror: handleLoad
+        onload: updateProgress,
+        onloaderror: updateProgress
       });
     });
 
   }, []);
+
+  // 2. AŞAMA: SİTE AÇILDIKTAN SONRA MÜZİKLERİ İNDİRME
+  useEffect(() => {
+    if (!isLoading) {
+        const downloadMusic = async () => {
+            // musicTracks listesini sırayla indiriyoruz
+            for (const musicSrc of musicTracks) {
+                await new Promise(r => setTimeout(r, 500));
+                await downloadToCache(musicSrc);
+            }
+        };
+        downloadMusic();
+    }
+  }, [isLoading]);
 
   const isLetterOpen = currentScene === 'letter';
 
@@ -92,13 +128,11 @@ export default function Home() {
 
   return (
     <main className="relative w-full h-screen overflow-hidden bg-[#0a0f1e] font-sans text-slate-200 selection:bg-purple-500/30">
-      
       <div className={`absolute inset-0 pointer-events-none z-0 ${currentScene === 'intro' ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}>
          <SnowFall />
       </div>
       
       <AnimatePresence mode="wait">
-        
         {currentScene === 'intro' && (
           <motion.div
             key="intro"
@@ -156,14 +190,9 @@ export default function Home() {
             <SkyScene />
           </motion.div>
         )}  
-
       </AnimatePresence>
 
-      <LetterModal 
-        isOpen={isLetterOpen} 
-        onClose={handleCloseLetter} 
-      />
-
+      <LetterModal isOpen={isLetterOpen} onClose={handleCloseLetter} />
     </main>
   );
 }

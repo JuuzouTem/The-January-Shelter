@@ -1,4 +1,4 @@
-import { standardMusicList, easterEggSongs } from './musicList';
+
 
 export const imageAssets = [
   "/images/room-bg.png",
@@ -13,11 +13,11 @@ export const imageAssets = [
   "/images/items/owl.png",
   "/images/items/tea.png",
   "/images/paper-texture.jpg",
- "/images/polaroids/1.jpg",
- "/images/polaroids/2.jpg",
+  "/images/polaroids/1.jpg", 
+  "/images/polaroids/2.jpg",
 ];
 
-export const sfxAssets = [
+export const baseSfx = [
   "/sounds/wind.mp3",
   "/sounds/cons.mp3",
   "/sounds/cons_sound.mp3",
@@ -26,6 +26,22 @@ export const sfxAssets = [
   "/sounds/yey.mp3", 
   "/sounds/music-box.mp3",
   "/sounds/undertale.mp3",
-  "/sounds/do-i-wanna-know.mp3",
-  "/sounds/masquerade.opus",
 ];
+
+export const musicTracks = [
+  "/sounds/cigarettes-out-window.opus",
+  "/sounds/do-i-wanna-know.mp3",
+  "/sounds/furina-demo.opus",
+  "/sounds/furina-theme.opus",
+  "/sounds/high.opus",
+  "/sounds/home.opus",
+  "/sounds/like-him.opus",
+  "/sounds/love-game.opus",
+  "/sounds/masquerade.opus",
+  "/sounds/no-one-noticed.opus",
+  "/sounds/stereo-love.opus",
+  "/sounds/telephone.opus",
+  "/sounds/voice.opus"
+];
+
+export const sfxAssets = [...baseSfx, ...musicTracks];
