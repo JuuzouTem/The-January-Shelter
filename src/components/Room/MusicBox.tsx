@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+'use client';
+
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { motion } from 'framer-motion';
 import { Howl } from 'howler';
 import InteractiveItem from './InteractiveItem';
@@ -7,10 +9,31 @@ interface MusicBoxProps {
   onStateChange: (isOpen: boolean) => void;
 }
 
-const MusicBox: React.FC<MusicBoxProps> = ({ onStateChange }) => {
+export interface MusicBoxHandle {
+    pauseAudio: () => void;
+    resumeAudio: () => void;
+}
+
+const MusicBox = forwardRef<MusicBoxHandle, MusicBoxProps>(({ onStateChange }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const soundRef = useRef<Howl | null>(null);
   const soundIdRef = useRef<number | null>(null);
+
+  // --- YENİ EKLENEN KISIM ---
+  useImperativeHandle(ref, () => ({
+    pauseAudio: () => {
+        if (soundRef.current && soundIdRef.current) {
+            soundRef.current.pause(soundIdRef.current);
+        }
+    },
+    resumeAudio: () => {
+        // Eğer kutu açıksa ve ses duraklatılmışsa devam et
+        if (isOpen && soundRef.current && soundIdRef.current) {
+            soundRef.current.play(soundIdRef.current);
+        }
+    }
+  }));
+  // --------------------------
 
   useEffect(() => {
     soundRef.current = new Howl({
@@ -32,13 +55,14 @@ const MusicBox: React.FC<MusicBoxProps> = ({ onStateChange }) => {
     sound.off('fade');
 
     if (isOpen) {
+        // Kutu açılınca sıfırdan başlat
         sound.stop();
-        
         const id = sound.play();
         soundIdRef.current = id;
         sound.fade(0, 0.4, 1000, id);
 
     } else {
+        // Kutu kapanınca fade out yap
         const id = soundIdRef.current;
         if (id && sound.playing(id)) {
             const currentVol = sound.volume(id) as number || sound.volume();
@@ -94,6 +118,8 @@ const MusicBox: React.FC<MusicBoxProps> = ({ onStateChange }) => {
       `}</style>
     </div>
   );
-};
+});
+
+MusicBox.displayName = 'MusicBox';
 
 export default MusicBox;

@@ -7,11 +7,13 @@ import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import { useGame } from '@/context/GameContext';
 import { quotes } from '@/data/quotes';
+import { easterEggSongs } from '@/data/musicList';
 import Image from 'next/image';
 
 import TeaCup from './TeaCup';
 import PlantGlitch from './PlantGlitch';
 import RadioPlayer, { RadioPlayerHandle } from './RadioPlayer';
+import MusicBox, { MusicBoxHandle } from './MusicBox';
 import OwlAnim from './OwlAnim';
 import InteractiveItem from './InteractiveItem';
 import BookQuotes from '../UI/BookQuotes';
@@ -19,7 +21,6 @@ import PolaroidGallery from './PolaroidGallery';
 import BirthdayModal from '../UI/BirthdayModal';
 import SecretNote from '../UI/SecretNote';
 
-import MusicBox from './MusicBox';
 import MoonGarland from './MoonGarland';
 
 const RoomScene = () => {
@@ -27,6 +28,9 @@ const RoomScene = () => {
   const windIdRef = useRef<number | null>(null);
   
   const radioRef = useRef<RadioPlayerHandle>(null);
+  const musicBoxRef = useRef<MusicBoxHandle>(null);
+  const noteMusicRef = useRef<Howl | null>(null);
+  const savedAudioState = useRef({ radio: false, box: false });
 
   const { changeScene, isCakeUnlocked } = useGame();
   const { width, height } = useWindowSize();
@@ -60,6 +64,39 @@ const RoomScene = () => {
     updateWindVolume();
   }, [updateWindVolume]);
 
+    useEffect(() => {
+    if (isHiddenNoteOpen) {
+        const radioActive = isRadioPlaying;
+        const boxActive = isMusicBoxPlaying;
+        savedAudioState.current = { radio: radioActive, box: boxActive };
+
+        if (radioActive) radioRef.current?.pauseAudio();
+        if (boxActive) musicBoxRef.current?.pauseAudio();
+
+        if (!noteMusicRef.current) {
+            noteMusicRef.current = new Howl({
+                src: [easterEggSongs.intro.src],
+                loop: true,
+                volume: 0.5,
+                html5: true
+            });
+        }
+        noteMusicRef.current.play();
+
+    } else {
+        
+        if (noteMusicRef.current) {
+            noteMusicRef.current.stop();
+        }
+
+        if (savedAudioState.current.radio) {
+            radioRef.current?.resumeAudio();
+        }
+        if (savedAudioState.current.box) {
+            musicBoxRef.current?.resumeAudio();
+        }
+    }
+  }, [isHiddenNoteOpen]);
 
   useEffect(() => {
     if (isCakeUnlocked) {

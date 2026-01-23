@@ -14,6 +14,8 @@ interface RadioPlayerProps {
 
 export interface RadioPlayerHandle {
   playSpecificSong: (id: number) => void;
+  pauseAudio: () => void; // YENİ
+  resumeAudio: () => void; // YENİ
 }
 
 const SONGS_PER_CYCLE = 12;
@@ -52,6 +54,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
     };
   }, []);
 
+  // --- YENİ EKLENEN KISIM: DIŞARIDAN KONTROL ---
   useImperativeHandle(ref, () => ({
     playSpecificSong: (targetId: number) => {
       const targetIndex = standardMusicList.findIndex(s => s.id === targetId);
@@ -61,8 +64,23 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
         setTrackState(targetIndex);
         playSound(targetSong, targetIndex);
       }
+    },
+    pauseAudio: () => {
+      if (soundRef.current && soundRef.current.playing()) {
+        soundRef.current.pause();
+        // State'i değiştirmeyelim ki UI "Playing" modunda kalsın ama ses gitsin (İsteğe bağlı)
+        // Ya da tam durdurma:
+        setIsPlaying(false); 
+      }
+    },
+    resumeAudio: () => {
+      if (soundRef.current && !soundRef.current.playing()) {
+        soundRef.current.play();
+        setIsPlaying(true);
+      }
     }
   }));
+  // ---------------------------------------------
 
   const getThemeStyles = () => {
     if (trackState === -1) {
