@@ -187,15 +187,15 @@ const RoomScene = () => {
             animate={{ opacity: 0.8 }}
             whileHover={{ scale: 1.1, opacity: 1, y: -2 }}
             onClick={handlePaperClick}
-            className="absolute bottom-[13%] left-[74%] z-20 cursor-pointer"
+            className="absolute bottom-[7%] left-[47%] z-30 cursor-pointer"
             style={{ 
                 width: '20px', 
                 height: '25px', 
                 backgroundColor: '#f4e4bc',
-                rotate: '95deg',
+                rotate: '80deg',
                 boxShadow: '1px 2px 4px rgba(0,0,0,0.5)',
                 borderRadius: '2p',
-                filter: 'brightness(0.15)'
+                filter: 'brightness(0.07)'
             }}
         >
             <div className="w-full h-full opacity-30 flex flex-col justify-center items-center gap-[2px]">
