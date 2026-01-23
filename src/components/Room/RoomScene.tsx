@@ -17,6 +17,7 @@ import InteractiveItem from './InteractiveItem';
 import BookQuotes from '../UI/BookQuotes';
 import PolaroidGallery from './PolaroidGallery';
 import BirthdayModal from '../UI/BirthdayModal';
+import SecretNote from '../UI/SecretNote';
 
 import MusicBox from './MusicBox';
 import MoonGarland from './MoonGarland';
@@ -32,6 +33,7 @@ const RoomScene = () => {
   
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [isBirthdayModalOpen, setIsBirthdayModalOpen] = useState(false);
+  const [isHiddenNoteOpen, setIsHiddenNoteOpen] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [currentQuote, setCurrentQuote] = useState("");
 
@@ -111,6 +113,14 @@ const RoomScene = () => {
      setTimeout(() => { setShowConfetti(false); }, 6000);
   };
 
+  const handlePaperClick = () => {
+
+    const paperSound = new Howl({ src: ['/sounds/paper.mp3'], volume: 0.5 });
+    paperSound.play();
+
+    setIsHiddenNoteOpen(true);
+  };
+
   return (
     <motion.div 
       className="relative w-full h-full overflow-hidden"
@@ -171,6 +181,30 @@ const RoomScene = () => {
          <RadioPlayer ref={radioRef} onPlayStateChange={handleRadioStateChange} />
       </div>
 
+      {isCakeUnlocked && isMoonLit && (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.8 }}
+            whileHover={{ scale: 1.1, opacity: 1, y: -2 }}
+            onClick={handlePaperClick}
+            className="absolute bottom-[13%] left-[74%] z-20 cursor-pointer"
+            style={{ 
+                width: '20px', 
+                height: '25px', 
+                backgroundColor: '#f4e4bc',
+                rotate: '95deg',
+                boxShadow: '1px 2px 4px rgba(0,0,0,0.5)',
+                borderRadius: '2p',
+                filter: 'brightness(0.15)'
+            }}
+        >
+            <div className="w-full h-full opacity-30 flex flex-col justify-center items-center gap-[2px]">
+                <div className="w-[80%] h-[1px] bg-black"></div>
+                <div className="w-[60%] h-[1px] bg-black"></div>
+            </div>
+        </motion.div>
+      )}
+
       <div className="absolute bottom-[44.2%] left-[18.3%] z-20 w-[4vw] max-w-[120px]">
          <MusicBox onStateChange={handleMusicBoxStateChange} />
       </div>
@@ -210,6 +244,8 @@ const RoomScene = () => {
       </div>
 
       <BookQuotes isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} quote={currentQuote} />
+
+      <SecretNote isOpen={isHiddenNoteOpen} onClose={() => setIsHiddenNoteOpen(false)} />
 
       <AnimatePresence>
         {isBirthdayModalOpen && (

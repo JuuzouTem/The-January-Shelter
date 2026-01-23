@@ -24,6 +24,7 @@ export const baseSfx = [
   "/sounds/plant.mp3",
   "/sounds/hoot.mp3",
   "/sounds/yey.mp3", 
+  "/sounds/paper.mp3",
   "/sounds/music-box.mp3",
   "/sounds/undertale.mp3",
 ];
