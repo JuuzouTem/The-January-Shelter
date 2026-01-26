@@ -17,7 +17,7 @@ const PAGES = [
     subtitle: "Sessiz Fısıltılar",
     color: '#D4C4FB',
     orientation: 'landscape',
-    content: "- Merak ediyorum, başımı kaldırıp geceye baktığımızda gözlerimiz aynı ayı mı buluyor?\n- Eğer öyleyse, ona fısıldadıklarını görebilmeyi, sessizliğinde sakladıklarını duyabilmeyi dilerdim...",
+    content: "- Merak ediyorum, başımızı kaldırıp geceye baktığımızda gözlerimiz aynı ayı mı buluyor?\n- Eğer öyleyse, ona fısıldadıklarını görebilmeyi, sessizliğinde sakladıklarını duyabilmeyi dilerdim...",
     date: "7.01.26"
   },
   {

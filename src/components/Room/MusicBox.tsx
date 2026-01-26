@@ -19,7 +19,6 @@ const MusicBox = forwardRef<MusicBoxHandle, MusicBoxProps>(({ onStateChange }, r
   const soundRef = useRef<Howl | null>(null);
   const soundIdRef = useRef<number | null>(null);
 
-  // --- YENİ EKLENEN KISIM ---
   useImperativeHandle(ref, () => ({
     pauseAudio: () => {
         if (soundRef.current && soundIdRef.current) {
@@ -27,20 +26,22 @@ const MusicBox = forwardRef<MusicBoxHandle, MusicBoxProps>(({ onStateChange }, r
         }
     },
     resumeAudio: () => {
-        // Eğer kutu açıksa ve ses duraklatılmışsa devam et
         if (isOpen && soundRef.current && soundIdRef.current) {
             soundRef.current.play(soundIdRef.current);
         }
     }
   }));
-  // --------------------------
 
   useEffect(() => {
     soundRef.current = new Howl({
       src: ['/sounds/music-box.mp3'],
-      loop: true,
+      loop: false, 
       volume: 0, 
       preload: true,
+      onend: () => {
+        soundIdRef.current = null; 
+        setIsOpen(false);
+      }
     });
 
     return () => {
@@ -55,27 +56,28 @@ const MusicBox = forwardRef<MusicBoxHandle, MusicBoxProps>(({ onStateChange }, r
     sound.off('fade');
 
     if (isOpen) {
-        // Kutu açılınca sıfırdan başlat
-        sound.stop();
-        const id = sound.play();
-        soundIdRef.current = id;
+        let id = soundIdRef.current;
+
+        if (!id) {
+            id = sound.play();
+            soundIdRef.current = id;
+        } else {
+            sound.play(id);
+        }
+        
         sound.fade(0, 0.4, 1000, id);
 
     } else {
-        // Kutu kapanınca fade out yap
         const id = soundIdRef.current;
+        
         if (id && sound.playing(id)) {
             const currentVol = sound.volume(id) as number || sound.volume();
-            
             sound.fade(currentVol, 0, 500, id);
             
             sound.once('fade', () => {
-                sound.stop(id);
-                soundIdRef.current = null;
+                sound.pause(id);
             }, id);
-        } else {
-            sound.stop();
-        }
+        } 
     }
     
     onStateChange(isOpen);
