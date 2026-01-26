@@ -14,8 +14,8 @@ interface RadioPlayerProps {
 
 export interface RadioPlayerHandle {
   playSpecificSong: (id: number) => void;
-  pauseAudio: () => void; // YENİ
-  resumeAudio: () => void; // YENİ
+  pauseAudio: () => void; 
+  resumeAudio: () => void; 
 }
 
 const SONGS_PER_CYCLE = 12;
@@ -27,6 +27,8 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   const [isPlaying, setIsPlaying] = useState(false);
   
   const [trackState, setTrackState] = useState(globalLastTrackIndex); 
+  // DEĞİŞİKLİK 1: Anlık indeksi tutacak bir Ref oluşturuyoruz
+  const trackStateRef = useRef(trackState);
   
   const initialSong = trackState >= 0 
     ? standardMusicList[trackState] 
@@ -54,13 +56,13 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
     };
   }, []);
 
-  // --- YENİ EKLENEN KISIM: DIŞARIDAN KONTROL ---
   useImperativeHandle(ref, () => ({
     playSpecificSong: (targetId: number) => {
       const targetIndex = standardMusicList.findIndex(s => s.id === targetId);
       const targetSong = standardMusicList.find(s => s.id === targetId);
 
       if (targetSong && targetIndex !== -1) {
+        // State güncellenirken Ref'i de manuel güncellemeyi playSound içinde yapıyoruz
         setTrackState(targetIndex);
         playSound(targetSong, targetIndex);
       }
@@ -68,8 +70,6 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
     pauseAudio: () => {
       if (soundRef.current && soundRef.current.playing()) {
         soundRef.current.pause();
-        // State'i değiştirmeyelim ki UI "Playing" modunda kalsın ama ses gitsin (İsteğe bağlı)
-        // Ya da tam durdurma:
         setIsPlaying(false); 
       }
     },
@@ -80,7 +80,6 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
       }
     }
   }));
-  // ---------------------------------------------
 
   const getThemeStyles = () => {
     if (trackState === -1) {
@@ -122,6 +121,9 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   const theme = getThemeStyles();
 
   const playSound = async (song: Song, index: number) => {
+    // DEĞİŞİKLİK 2: Ref'i hemen güncelliyoruz ki onend tetiklendiğinde doğru değeri bilsin
+    trackStateRef.current = index;
+
     if (soundRef.current) {
         soundRef.current.stop();
         soundRef.current.unload();
@@ -144,6 +146,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
       format: [extension],
       html5: true,
       volume: 0.5,
+      // Burada çağrılan handleNext artık Ref kullanacağı için güvenli
       onend: () => handleNext(),
       onloaderror: (id, error) => {
          console.error("Müzik yükleme hatası:", error, song.src);
@@ -159,18 +162,22 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   };
 
   const togglePlay = () => {
+    // DEĞİŞİKLİK 3: Burada da doğruluk için Ref kullanılabilir ama şart değil, 
+    // yine de tutarlılık için ref kontrolü ekliyoruz.
+    const currentIdx = trackStateRef.current;
+
     if (!soundRef.current) {
       let songToPlay = standardMusicList[0];
       
-      if (trackState >= 0 && trackState < standardMusicList.length) {
-          songToPlay = standardMusicList[trackState];
-      } else if (trackState === -1) {
+      if (currentIdx >= 0 && currentIdx < standardMusicList.length) {
+          songToPlay = standardMusicList[currentIdx];
+      } else if (currentIdx === -1) {
           songToPlay = easterEggSongs.intro;
-      } else if (trackState === -2) {
+      } else if (currentIdx === -2) {
           songToPlay = easterEggSongs.main;
       }
 
-      playSound(songToPlay, trackState);
+      playSound(songToPlay, currentIdx);
     } else {
       if (isPlaying) {
         soundRef.current.pause();
@@ -183,12 +190,15 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   };
 
   const handleNext = () => {
-    if (trackState === -1) {
+    // DEĞİŞİKLİK 4: State yerine Ref'teki güncel değeri okuyoruz
+    const currentIdx = trackStateRef.current;
+
+    if (currentIdx === -1) {
       playSound(easterEggSongs.main, -2);
       return;
     }
 
-    if (trackState === -2) {
+    if (currentIdx === -2) {
       const nextIndex = Math.floor(Math.random() * standardMusicList.length);
       playSound(standardMusicList[nextIndex], nextIndex);
       return;
@@ -205,17 +215,21 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
       setPlayCount(SONGS_PER_CYCLE); 
       playSound(easterEggSongs.intro, -1);
     } else {
-      const nextIndex = (trackState + 1) % standardMusicList.length;
+      // trackState yerine currentIdx kullanıyoruz
+      const nextIndex = (currentIdx + 1) % standardMusicList.length;
       playSound(standardMusicList[nextIndex], nextIndex);
     }
   };
 
   const handlePrev = () => {
+    // DEĞİŞİKLİK 5: Aynı düzeltmeyi Geri butonu için de yapıyoruz
+    const currentIdx = trackStateRef.current;
+    
     let nextIndex = 0;
-    if (trackState < 0) {
+    if (currentIdx < 0) {
         nextIndex = standardMusicList.length - 1;
     } else {
-        nextIndex = (trackState - 1 + standardMusicList.length) % standardMusicList.length;
+        nextIndex = (currentIdx - 1 + standardMusicList.length) % standardMusicList.length;
     }
     playSound(standardMusicList[nextIndex], nextIndex);
   };
