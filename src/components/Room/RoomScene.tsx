@@ -7,7 +7,6 @@ import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import { useGame } from '@/context/GameContext';
 import { quotes } from '@/data/quotes';
-import { easterEggSongs } from '@/data/musicList';
 import Image from 'next/image';
 
 import TeaCup from './TeaCup';
@@ -29,8 +28,7 @@ const RoomScene = () => {
   
   const radioRef = useRef<RadioPlayerHandle>(null);
   const musicBoxRef = useRef<MusicBoxHandle>(null);
-  const noteMusicRef = useRef<Howl | null>(null);
-  const savedAudioState = useRef({ radio: false, box: false });
+  const savedAudioState = useRef({ box: false });
 
   const { changeScene, isCakeUnlocked } = useGame();
   const { width, height } = useWindowSize();
@@ -64,39 +62,28 @@ const RoomScene = () => {
     updateWindVolume();
   }, [updateWindVolume]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (isHiddenNoteOpen) {
-        const radioActive = isRadioPlaying;
         const boxActive = isMusicBoxPlaying;
-        savedAudioState.current = { radio: radioActive, box: boxActive };
+        savedAudioState.current = { box: boxActive };
 
-        if (radioActive) radioRef.current?.pauseAudio();
         if (boxActive) musicBoxRef.current?.pauseAudio();
 
-        if (!noteMusicRef.current) {
-            noteMusicRef.current = new Howl({
-                src: [easterEggSongs.intro.src],
-                loop: true,
-                volume: 0.5,
-                html5: true
-            });
+        if (radioRef.current) {
+            radioRef.current.saveAudioState(); 
+            radioRef.current.playSpecificSong(998);
         }
-        noteMusicRef.current.play();
 
     } else {
-        
-        if (noteMusicRef.current) {
-            noteMusicRef.current.stop();
+        if (radioRef.current) {
+             radioRef.current.restoreAudioState(); 
         }
 
-        if (savedAudioState.current.radio) {
-            radioRef.current?.resumeAudio();
-        }
         if (savedAudioState.current.box) {
             musicBoxRef.current?.resumeAudio();
         }
     }
-  }, [isHiddenNoteOpen]);
+  }, [isHiddenNoteOpen, isMusicBoxPlaying]);
 
   useEffect(() => {
     if (isCakeUnlocked) {
@@ -136,6 +123,11 @@ const RoomScene = () => {
     setIsMusicBoxPlaying(isOpen);
   }, []);
 
+  const handleSilenceAll = () => {
+    if (radioRef.current) radioRef.current.pauseAudio();
+    if (musicBoxRef.current) musicBoxRef.current.pauseAudio();
+  };
+
   const handleOpenBook = () => {
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     setCurrentQuote(randomQuote);
@@ -151,10 +143,8 @@ const RoomScene = () => {
   };
 
   const handlePaperClick = () => {
-
     const paperSound = new Howl({ src: ['/sounds/paper.mp3'], volume: 0.5 });
     paperSound.play();
-
     setIsHiddenNoteOpen(true);
   };
 
@@ -215,7 +205,11 @@ const RoomScene = () => {
       </motion.div>
 
       <div className="absolute bottom-[44.2%] left-[52%] z-21 w-[3vw] max-w-[180px]">
-         <RadioPlayer ref={radioRef} onPlayStateChange={handleRadioStateChange} />
+         <RadioPlayer 
+            ref={radioRef} 
+            onPlayStateChange={handleRadioStateChange} 
+            isLocked={isHiddenNoteOpen}
+         />
       </div>
 
       {isCakeUnlocked && isMoonLit && (
@@ -243,7 +237,7 @@ const RoomScene = () => {
       )}
 
       <div className="absolute bottom-[44.2%] left-[18.3%] z-20 w-[4vw] max-w-[120px]">
-         <MusicBox onStateChange={handleMusicBoxStateChange} />
+         <MusicBox ref={musicBoxRef} onStateChange={handleMusicBoxStateChange} />
       </div>
 
       <div className="absolute bottom-[30%] left-[34.5%] z-20 w-[3vw] max-w-[100px]">
@@ -286,7 +280,11 @@ const RoomScene = () => {
 
       <AnimatePresence>
         {isBirthdayModalOpen && (
-            <BirthdayModal isOpen={isBirthdayModalOpen} onClose={() => setIsBirthdayModalOpen(false)} />
+            <BirthdayModal 
+                isOpen={isBirthdayModalOpen} 
+                onClose={() => setIsBirthdayModalOpen(false)} 
+                onSilence={handleSilenceAll}
+            />
         )}
       </AnimatePresence>
     </motion.div>

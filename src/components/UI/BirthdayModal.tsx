@@ -7,9 +7,10 @@ import { Heart, X } from 'lucide-react';
 interface BirthdayModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSilence?: () => void;
 }
 
-const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
+const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose, onSilence }) => {
   const [isOpened, setIsOpened] = useState(false);
 
   useEffect(() => {
@@ -100,6 +101,9 @@ const BirthdayModal: React.FC<BirthdayModalProps> = ({ isOpen, onClose }) => {
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-[#c51c1c] underline hover:text-red-800 transition-colors break-all font-bold"
+                    onClick={() => {
+                        if (onSilence) onSilence();
+                    }}
                   >
                     https://juuzoutem.github.io/birthday/
                   </a>

@@ -10,12 +10,15 @@ import { getAudioSource } from '@/utils/audioManager';
 
 interface RadioPlayerProps {
   onPlayStateChange?: (isPlaying: boolean) => void;
+  isLocked?: boolean;
 }
 
 export interface RadioPlayerHandle {
   playSpecificSong: (id: number) => void;
   pauseAudio: () => void; 
-  resumeAudio: () => void; 
+  resumeAudio: () => void;
+  saveAudioState: () => void;
+  restoreAudioState: () => void;
 }
 
 const SONGS_PER_CYCLE = 12;
@@ -23,13 +26,14 @@ const CHANCE_INCREMENT = 0.05;
 
 let globalLastTrackIndex = 0; 
 
-const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlayStateChange }, ref) => {
+const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlayStateChange, isLocked = false }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
   
   const [trackState, setTrackState] = useState(globalLastTrackIndex); 
-  // DEĞİŞİKLİK 1: Anlık indeksi tutacak bir Ref oluşturuyoruz
   const trackStateRef = useRef(trackState);
   
+  const savedStateRef = useRef<{ index: number; seek: number; wasPlaying: boolean } | null>(null);
+
   const initialSong = trackState >= 0 
     ? standardMusicList[trackState] 
     : (trackState === -1 ? easterEggSongs.intro : easterEggSongs.main);
@@ -57,14 +61,71 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   }, []);
 
   useImperativeHandle(ref, () => ({
+    saveAudioState: () => {
+        const currentIdx = trackStateRef.current;
+        const sound = soundRef.current;
+        let seek = 0;
+        let wasPlaying = false;
+
+        if (sound) {
+            seek = typeof sound.seek() === 'number' ? sound.seek() as number : 0;
+            wasPlaying = sound.playing();
+        }
+
+        savedStateRef.current = {
+            index: currentIdx,
+            seek: seek,
+            wasPlaying: wasPlaying
+        };
+    },
+    restoreAudioState: () => {
+        const saved = savedStateRef.current;
+        if (!saved) return;
+
+        if (soundRef.current) {
+            soundRef.current.stop();
+        }
+
+        if (!saved.wasPlaying) {
+            setTrackState(saved.index);
+            trackStateRef.current = saved.index;
+            
+            let songToRestore = standardMusicList[saved.index];
+            if (saved.index === -1) songToRestore = easterEggSongs.intro;
+            if (saved.index === -2) songToRestore = easterEggSongs.main;
+            
+            if (songToRestore) setCurrentSong(songToRestore);
+            setIsPlaying(false);
+            return;
+        }
+
+        let songToPlay = standardMusicList[saved.index];
+        if (saved.index === -1) songToPlay = easterEggSongs.intro;
+        if (saved.index === -2) songToPlay = easterEggSongs.main;
+
+        if (songToPlay) {
+            setTrackState(saved.index);
+            playSound(songToPlay, saved.index, saved.seek);
+        }
+    },
     playSpecificSong: (targetId: number) => {
       const targetIndex = standardMusicList.findIndex(s => s.id === targetId);
       const targetSong = standardMusicList.find(s => s.id === targetId);
+      
+      let finalSong = targetSong;
+      let finalIndex = targetIndex;
 
-      if (targetSong && targetIndex !== -1) {
-        // State güncellenirken Ref'i de manuel güncellemeyi playSound içinde yapıyoruz
-        setTrackState(targetIndex);
-        playSound(targetSong, targetIndex);
+      if (targetId === 998) {
+         finalSong = easterEggSongs.intro;
+         finalIndex = -1;
+      } else if (targetId === 999) {
+         finalSong = easterEggSongs.main;
+         finalIndex = -2;
+      }
+
+      if (finalSong) {
+        setTrackState(finalIndex);
+        playSound(finalSong, finalIndex);
       }
     },
     pauseAudio: () => {
@@ -120,8 +181,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
 
   const theme = getThemeStyles();
 
-  const playSound = async (song: Song, index: number) => {
-    // DEĞİŞİKLİK 2: Ref'i hemen güncelliyoruz ki onend tetiklendiğinde doğru değeri bilsin
+  const playSound = async (song: Song, index: number, startTime: number = 0) => {
     trackStateRef.current = index;
 
     if (soundRef.current) {
@@ -146,7 +206,11 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
       format: [extension],
       html5: true,
       volume: 0.5,
-      // Burada çağrılan handleNext artık Ref kullanacağı için güvenli
+      onload: () => {
+        if (startTime > 0) {
+            sound.seek(startTime);
+        }
+      },
       onend: () => handleNext(),
       onloaderror: (id, error) => {
          console.error("Müzik yükleme hatası:", error, song.src);
@@ -162,8 +226,8 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   };
 
   const togglePlay = () => {
-    // DEĞİŞİKLİK 3: Burada da doğruluk için Ref kullanılabilir ama şart değil, 
-    // yine de tutarlılık için ref kontrolü ekliyoruz.
+    if (isLocked) return;
+
     const currentIdx = trackStateRef.current;
 
     if (!soundRef.current) {
@@ -190,7 +254,8 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
   };
 
   const handleNext = () => {
-    // DEĞİŞİKLİK 4: State yerine Ref'teki güncel değeri okuyoruz
+    if (isLocked) return;
+
     const currentIdx = trackStateRef.current;
 
     if (currentIdx === -1) {
@@ -215,14 +280,14 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
       setPlayCount(SONGS_PER_CYCLE); 
       playSound(easterEggSongs.intro, -1);
     } else {
-      // trackState yerine currentIdx kullanıyoruz
       const nextIndex = (currentIdx + 1) % standardMusicList.length;
       playSound(standardMusicList[nextIndex], nextIndex);
     }
   };
 
   const handlePrev = () => {
-    // DEĞİŞİKLİK 5: Aynı düzeltmeyi Geri butonu için de yapıyoruz
+    if (isLocked) return;
+
     const currentIdx = trackStateRef.current;
     
     let nextIndex = 0;
@@ -242,7 +307,11 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
 
   return (
     <div className="relative">
-      <InteractiveItem label={isPlaying ? "Durdur" : "Radyoyu Aç"} onClick={togglePlay} className="w-full h-full">
+      <InteractiveItem 
+        label={isLocked ? "Kilitli" : (isPlaying ? "Durdur" : "Radyoyu Aç")} 
+        onClick={togglePlay} 
+        className={`w-full h-full ${isLocked ? 'cursor-default' : ''}`}
+      >
         <div className="relative w-full h-full">
             <img 
                 src="/images/items/radio.png" 
@@ -305,7 +374,7 @@ const RadioPlayer = forwardRef<RadioPlayerHandle, RadioPlayerProps>(({ onPlaySta
               </motion.span>
             </div>
 
-            <div className="flex items-center gap-2 border-l border-white/10 pl-4">
+            <div className={`flex items-center gap-2 border-l border-white/10 pl-4 ${isLocked ? 'opacity-50 pointer-events-none' : ''}`}>
               <button onClick={handlePrev} className="p-2 hover:bg-white/10 rounded-full text-white transition-colors">
                 <SkipBack size={18} />
               </button>

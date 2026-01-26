@@ -18,6 +18,7 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
 
   const preloadedImages = useRef<HTMLImageElement[]>([]);
+  const introWindRef = useRef<Howl | null>(null);
 
   useEffect(() => {
     const totalAssets = imageAssets.length + baseSfx.length;
@@ -84,6 +85,37 @@ export default function Home() {
         downloadMusic();
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    if (!isLoading && currentScene === 'intro') {
+        if (!introWindRef.current) {
+            const sound = new Howl({
+                src: ['/sounds/wind.mp3'],
+                loop: true,
+                volume: 0,
+                html5: true,
+                autoplay: false
+            });
+            
+            introWindRef.current = sound;
+            sound.play();
+            sound.fade(0, 0.4, 2000);
+        }
+    } else {
+        if (introWindRef.current) {
+            const sound = introWindRef.current;
+            const currentVol = sound.volume();
+            
+            sound.fade(currentVol, 0, 1500);
+            
+            setTimeout(() => {
+                sound.stop();
+                sound.unload();
+                introWindRef.current = null;
+            }, 1500);
+        }
+    }
+  }, [isLoading, currentScene]);
 
   const isLetterOpen = currentScene === 'letter';
 
